@@ -17,11 +17,11 @@ namespace ElevatorChallengeTests
             // assign the defaul control centre service object
             _elevatorSystemConfig = new ElevatorSystemConfig(5, 1, 6);
             _threadManager = new Mock<IElevatorThreadManager>();
-            _controlCentreService = new ControlCentreService(_threadManager.Object,_elevatorSystemConfig);
+            _controlCentreService = new ControlCentreService(_elevatorSystemConfig);
         }
 
         [Fact]
-        public void ControlCentreService_ConstructNewObject_VerifyConfigDetailRequestsAndElevators()
+        public async Task ControlCentreService_ConstructNewObject_VerifyConfigDetailRequestsAndElevators()
         {
             // arrange 
             var totalFloors = 50;
@@ -29,7 +29,7 @@ namespace ElevatorChallengeTests
             var maxElevatorWeight = 8;
             var sysConfig = new ElevatorSystemConfig(totalFloors, totalElevators, maxElevatorWeight);
             // act
-            var controlCentreService = new ControlCentreService(_threadManager.Object,sysConfig);
+            var controlCentreService = new ControlCentreService(sysConfig);
 
             // assert
             var config = controlCentreService.GetConfigDetails();
@@ -41,7 +41,8 @@ namespace ElevatorChallengeTests
 
             // test inital state of arrays 
             Assert.Empty(controlCentreService.GetPendingPassengerRequests());
-            Assert.Equal(totalElevators, controlCentreService.GetElevatorStatuses().Count());
+            var elevators = await controlCentreService.GetElevators();
+            Assert.Equal(totalElevators, elevators.Count());
         }
 
         [Fact]

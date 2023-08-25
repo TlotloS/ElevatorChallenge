@@ -2,6 +2,6 @@
 {
     public interface IElevatorThreadManager
     {
-        Task StartElevatorThreadsAsync(List<IElevator> elevators);
+        void StartElevatorThreadsAsync(IEnumerable<IElevator> elevators);
     }
 }

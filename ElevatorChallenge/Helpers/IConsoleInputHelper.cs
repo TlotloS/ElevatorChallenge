@@ -9,6 +9,7 @@ namespace ElevatorChallenge.Helpers
 {
     public interface IConsoleInputHelper 
     {
-        public void SubmitElevatorRequest(string input);
+        Task StartPrintingTaskAsync();
+        Task StartElevatorThreads();
     }
 }

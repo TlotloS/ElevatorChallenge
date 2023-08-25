@@ -39,13 +39,14 @@ namespace ElevatorChallenge.Services
         public async Task QueuePassengerRequest(PassengerRequest passengerRequest)
         {
             _passengerRequestQueue.Add(passengerRequest);
-            await Task.Delay(TimeSpan.FromMilliseconds(1)); // Simulated delay
+            await Task.Delay(TimeSpan.FromSeconds(2)); // Simulated delay
         }
         public async Task<ElevatorStatus> MoveToNextLevelAsync()
         {
             // if there aren't any pending request return the current status
             if (!HasPendingRequests()) { 
                 CurrentStatus.Direction = ElevatorDirection.None;
+                await Task.Delay(TimeSpan.FromSeconds(2)); // Simulated delay
                 return CurrentStatus;
             }
 
@@ -65,7 +66,7 @@ namespace ElevatorChallenge.Services
             }
             else
             {
-                await Task.Delay(TimeSpan.FromSeconds(0.5)); // Simulated delay
+                await Task.Delay(TimeSpan.FromSeconds(2)); // Simulated delay
             }
             return CurrentStatus;
         }
@@ -74,7 +75,6 @@ namespace ElevatorChallenge.Services
         private async Task HandlePassengersAsync()
         {
             // Move passengers around here
-            Console.WriteLine("Handling passengers async");
             HandleDropOffs();
             HandlePickups();
             await Task.Delay(TimeSpan.FromSeconds(2)); // Simulated delay

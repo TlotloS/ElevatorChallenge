@@ -7,22 +7,25 @@ public class ElevatorThreadManager : IElevatorThreadManager
     {
     }
 
-    public async Task StartElevatorThreadsAsync(List<IElevator> elevators)
+    public void StartElevatorThreadsAsync(IEnumerable<IElevator> elevators)
     {
+        // Start each elevator in its own thread
         foreach (var elevator in elevators)
         {
-            var task = RunElevatorAsync(elevator);
-            _elevatorTasks.Add(task);
+            StartElevatorThread(elevator);
         }
-
-        await Task.WhenAll(_elevatorTasks);
     }
 
-    private async Task RunElevatorAsync(IElevator elevator)
+    private void StartElevatorThread(IElevator elevator)
     {
-        while (true)
+        Task.Run(async () =>
         {
-            await elevator.MoveToNextLevelAsync();
-        }
+            while (true)
+            {
+                await elevator.MoveToNextLevelAsync();
+                // Add a delay or await depending on your elevator logic
+                await Task.Delay(TimeSpan.FromSeconds(4));
+            }
+        });
     }
 }

@@ -8,7 +8,6 @@ namespace ElevatorChallenge.Services
         private readonly List<IElevator> _elevators = new List<IElevator>();
         private readonly ElevatorSystemConfig _elevatorSystemConfig;
         private readonly List<PassengerRequest> _pendingPassengerRequests = new();
-        private readonly IElevatorThreadManager _elevatorThreadManager;
 
         /// <summary>
         /// Default constructor
@@ -16,17 +15,13 @@ namespace ElevatorChallenge.Services
         /// <param name="totalFloors"></param>
         /// <param name="totalElevators"></param>
         /// <param name="maxElevatorWeight"></param>
-        public ControlCentreService(IElevatorThreadManager elevatorThreadManager, ElevatorSystemConfig elevatorSystemConfig)
+        public ControlCentreService(ElevatorSystemConfig elevatorSystemConfig)
         {
-            _elevatorThreadManager = elevatorThreadManager;
             _elevatorSystemConfig = elevatorSystemConfig;
             for (int i = 0; i < elevatorSystemConfig.ElevatorsCount; i++)
             {
                 _elevators.Add(new Elevator(i));
             }
-
-            // start elevator
-            _elevatorThreadManager.StartElevatorThreadsAsync(_elevators);
         }
 
         public async Task AddPickUpRequest(PassengerRequest request)
@@ -46,16 +41,16 @@ namespace ElevatorChallenge.Services
             // Ignore request to the same floor
             if (request.OriginFloorLevel == request.DestinationFloorLevel) { return; }
             _pendingPassengerRequests.Add(request);
-            var elevator = GetClosestElevator(request);
-            await elevator.QueuePassengerRequest(request);
+            var elevator = await GetClosestElevator(request);
+            elevator.QueuePassengerRequest(request);
         }
 
         public IEnumerable<PassengerRequest> GetPendingPassengerRequests() => _pendingPassengerRequests;
         public ElevatorSystemConfig GetConfigDetails() => _elevatorSystemConfig;
-        public IEnumerable<ElevatorStatus> GetElevatorStatuses() => _elevators.Select(x => x.CurrentStatus);
+        public Task<IEnumerable<ElevatorStatus>> GetElevatorStatuses() => Task.FromResult(_elevators.Select(x => x.CurrentStatus));
 
         #region Private method
-        private IElevator GetClosestElevator(PassengerRequest request)
+        private Task<IElevator> GetClosestElevator(PassengerRequest request)
         {
             // determine direction of passenger request
             ElevatorDirection requestDirection = request.DestinationFloorLevel - request.DestinationFloorLevel > 0 ?
@@ -70,8 +65,14 @@ namespace ElevatorChallenge.Services
             // 1) Consider elevator going in the same direction first as the passenger request
             // 2) Provided the elevator has not already passed the elevator
 
-            return closestElevator;
+            return Task.FromResult(closestElevator);
         }
+
+        public Task<IEnumerable<IElevator>> GetElevators()
+        {
+            return Task.FromResult<IEnumerable<IElevator>>(_elevators);
+        }
+
         #endregion
 
     }
