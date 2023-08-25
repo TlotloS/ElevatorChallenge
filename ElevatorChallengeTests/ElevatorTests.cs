@@ -76,5 +76,28 @@ namespace ElevatorChallenge.Tests
             Assert.Equal(ElevatorDirection.Down, result.Direction);
             Assert.Equal(2, result.CurrentFloor); // Current floor incremented
         }
+
+        [Fact]
+        public async Task TestHandlePassengersAsync_ElevatorHasPendingPickups_ExpectTheLoadToIncrease()
+        {
+            // Arrange
+            var elevator = new Elevator(new ElevatorStatus
+            {
+                Direction = ElevatorDirection.Up,
+                CurrentFloor = 1,
+                Load = 0,
+            });
+
+            var passengerRequest1 = new PassengerRequest { OriginFloorLevel = 2, DestinationFloorLevel = 8, PassengerCount = 2 };
+            var passengerRequest2 = new PassengerRequest { OriginFloorLevel = 3, DestinationFloorLevel = 8, PassengerCount = 3 };
+            await elevator.QueuePassengerRequest(passengerRequest1);
+            await elevator.QueuePassengerRequest(passengerRequest2);
+            // Act
+            var firstMove = await elevator.MoveToNextLevelAsync();
+            Assert.Equal(2, firstMove.Load);
+
+            var secondMove = await elevator.MoveToNextLevelAsync();
+            Assert.Equal(5, secondMove.Load);
+        }
     }
 }

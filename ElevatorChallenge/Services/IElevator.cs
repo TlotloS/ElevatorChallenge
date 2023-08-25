@@ -14,15 +14,6 @@ namespace ElevatorChallenge.Services
         /// </summary>
         /// <returns></returns>
         Task<ElevatorStatus> MoveToNextLevelAsync();
-        /// <summary>
-        /// Picking up and dropping off passengers.
-        /// <list type="number">
-        /// <item>Drop off/pickup passenger if on the correct level</item>
-        /// <item></item>
-        /// </list>
-        /// </summary>
-        /// <returns></returns>
-        Task HandlePassengersAsync();
         Task QueuePassengerRequest(PassengerRequest passengerRequest);
     }
 }

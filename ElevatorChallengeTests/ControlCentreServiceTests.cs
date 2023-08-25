@@ -11,14 +11,13 @@ namespace ElevatorChallengeTests
         /// </summary>
         private readonly IControlCentreService _controlCentreService;
         private readonly ElevatorSystemConfig _elevatorSystemConfig;
+        private readonly Mock<IElevatorThreadManager> _threadManager;
         public ControlCentreServiceTests()
         {
             // assign the defaul control centre service object
             _elevatorSystemConfig = new ElevatorSystemConfig(5, 1, 6);
-            _controlCentreService = new ControlCentreService(
-                _elevatorSystemConfig.FloorsCount, // 5
-                _elevatorSystemConfig.ElevatorsCount, // 1
-                _elevatorSystemConfig.MaxWeight); // 6
+            _threadManager = new Mock<IElevatorThreadManager>();
+            _controlCentreService = new ControlCentreService(_threadManager.Object,_elevatorSystemConfig);
         }
 
         [Fact]
@@ -28,8 +27,9 @@ namespace ElevatorChallengeTests
             var totalFloors = 50;
             var totalElevators = 2;
             var maxElevatorWeight = 8;
+            var sysConfig = new ElevatorSystemConfig(totalFloors, totalElevators, maxElevatorWeight);
             // act
-            var controlCentreService = new ControlCentreService(totalFloors, totalElevators, maxElevatorWeight);
+            var controlCentreService = new ControlCentreService(_threadManager.Object,sysConfig);
 
             // assert
             var config = controlCentreService.GetConfigDetails();

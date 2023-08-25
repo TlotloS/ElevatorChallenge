@@ -68,11 +68,41 @@ namespace ElevatorChallenge.Services
         }
 
 
-        public async Task HandlePassengersAsync()
+        private async Task HandlePassengersAsync()
         {
             // Move passengers around here
             Console.WriteLine("Handling passengers async");
+            HandleDropOffs();
+            HandlePickups();
             await Task.Delay(TimeSpan.FromSeconds(2)); // Simulated delay
+        }
+
+        private void HandlePickups()
+        {
+            var pickUps = _passengerRequestQueue.Where(x => x.OriginFloorLevel == CurrentStatus.CurrentFloor).ToList();
+
+            // remove from queue
+            foreach (var pickup in pickUps)
+            {
+                _passengerRequestQueue.Remove(pickup);
+            }
+
+            // Handle passengers who were picked up on the current floor - move them to the _passengersInTransit list
+            if (pickUps.Any()) { 
+                _passengersInTransit.AddRange(pickUps);
+                CurrentStatus.Load += pickUps.Sum(x => x.PassengerCount) ;
+            }
+
+        }
+
+        private void HandleDropOffs()
+        {
+            var dropOffs = _passengersInTransit.Where(x => x.DestinationFloorLevel == CurrentStatus.CurrentFloor).ToList();
+            CurrentStatus.Load -= dropOffs.Sum(x => x.PassengerCount);
+            foreach (var dropoff in dropOffs)
+            {
+                _passengersInTransit.Remove(dropoff);
+            }
         }
 
         private async Task<IEnumerable<int>> GetFloorStoppingPointsWithinTravellingDirectionAsync()

@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ElevatorChallenge.Services
+﻿namespace ElevatorChallenge.Services
 {
-    internal interface IElevatorThreadManager
+    public interface IElevatorThreadManager
     {
+        Task StartElevatorThreadsAsync(List<IElevator> elevators);
     }
 }

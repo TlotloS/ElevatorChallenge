@@ -13,6 +13,7 @@ namespace ElevatorChallenge.Services
         private readonly List<IElevator> _elevators = new List<IElevator>();
         private readonly ElevatorSystemConfig _elevatorSystemConfig;
         private readonly List<PassengerRequest> _pendingPassengerRequests = new();
+        private readonly IElevatorThreadManager _elevatorThreadManager;
 
         /// <summary>
         /// Default constructor
@@ -20,10 +21,11 @@ namespace ElevatorChallenge.Services
         /// <param name="totalFloors"></param>
         /// <param name="totalElevators"></param>
         /// <param name="maxElevatorWeight"></param>
-        public ControlCentreService(int totalFloors, int totalElevators, int maxElevatorWeight)
+        public ControlCentreService(IElevatorThreadManager elevatorThreadManager, ElevatorSystemConfig elevatorSystemConfig)
         {
-            _elevatorSystemConfig = new ElevatorSystemConfig(totalFloors, totalElevators,maxElevatorWeight);
-            for (int i = 0; i < totalElevators; i++)
+            _elevatorThreadManager = elevatorThreadManager;
+            _elevatorSystemConfig = elevatorSystemConfig;
+            for (int i = 0; i < elevatorSystemConfig.ElevatorsCount; i++)
             {
                 _elevators.Add(new Elevator());
             }

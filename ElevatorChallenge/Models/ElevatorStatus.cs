@@ -11,5 +11,9 @@ namespace ElevatorChallenge.Models
         /// The diretion which the elevator is currently going
         /// </summary>
         public ElevatorDirection Direction { get; set; }
+        /// <summary>
+        /// Count of people inside the elevator
+        /// </summary>
+        public int Load { get; set; }
     }
 }
