@@ -48,10 +48,10 @@ namespace ElevatorChallengeTests
         public void AddPassengerRequest_ValidRequest_ShouldAddRequestToList()
         {
             // Arrange
-            var passengerRequest = new PassengerRequest { PassengerCount = 2, DestinationFloorLevel = 10, OrginFloorLevel = 18 };
+            var passengerRequest = new PassengerRequest { PassengerCount = 2, DestinationFloorLevel = 10, OriginFloorLevel = 18 };
 
             // Act
-            _controlCentreService.AddPassengerRequest(passengerRequest);
+            _controlCentreService.AddPickUpRequest(passengerRequest);
 
             // Assert
             var pendingRequests = _controlCentreService.GetPendingPassengerRequests();
@@ -67,11 +67,32 @@ namespace ElevatorChallengeTests
             {
                 PassengerCount = _elevatorSystemConfig.MaxWeight + 1,
                 DestinationFloorLevel = 10,
-                OrginFloorLevel = 18
+                OriginFloorLevel = 18
             };
 
             // Act & Assert
-            Assert.ThrowsAny<Exception>(() => _controlCentreService.AddPassengerRequest(passengerRequest));
+            Assert.ThrowsAny<Exception>(() => _controlCentreService.AddPickUpRequest(passengerRequest));
+        }
+
+        [Fact]
+        public void AddPassengerRequest_PDestinationSameAsOrigin_PassengerQueRemainsTheSame()
+        {
+            // Arrange
+            var passengerRequest = new PassengerRequest
+            {
+                PassengerCount = _elevatorSystemConfig.MaxWeight - 1,
+                DestinationFloorLevel = 2,
+                OriginFloorLevel = 2
+            };
+            var previousPendingRequests = _controlCentreService.GetPendingPassengerRequests();
+
+            // Act 
+            _controlCentreService.AddPickUpRequest(passengerRequest);
+            var updatedPendingRequest = _controlCentreService.GetPendingPassengerRequests();
+            // Assert
+            Assert.Empty(previousPendingRequests);
+            Assert.Equal(previousPendingRequests.Count(), updatedPendingRequest.Count());
+
         }
     }
 }

@@ -12,7 +12,7 @@ namespace ElevatorChallenge.Services
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        public void AddPassengerRequest(PassengerRequest request);
+        public void AddPickUpRequest(PassengerRequest request);
         /// <summary>
         /// Return the awaiting passenger list
         /// </summary>

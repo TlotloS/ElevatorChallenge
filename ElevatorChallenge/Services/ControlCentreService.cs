@@ -1,4 +1,5 @@
-﻿using ElevatorChallenge.Models;
+﻿using ElevatorChallenge.Enums;
+using ElevatorChallenge.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,18 +29,40 @@ namespace ElevatorChallenge.Services
             }
         }
 
-        public void AddPassengerRequest(PassengerRequest request)
+        public void AddPickUpRequest(PassengerRequest request)
         {
             // Assume that the passenger will reconduct a valid request if they exceed the limit
             if(request.PassengerCount >= _elevatorSystemConfig.MaxWeight) {
                 throw new Exception("Weight limit exceeded, please try again");
             }
+            // Ignore request to the same floor
+            if(request.OriginFloorLevel == request.DestinationFloorLevel) { return; }
             _pendingPassengerRequests.Add(request);
         }
 
         public IEnumerable<PassengerRequest> GetPendingPassengerRequests() => _pendingPassengerRequests;
         public ElevatorSystemConfig GetConfigDetails() => _elevatorSystemConfig;
         public IEnumerable<IElevator> GetElevators() => _elevators;
+
+        #region Private method
+        private IElevator GetClosestElevator(PassengerRequest request)
+        {
+            // determine direction of passenger request
+            ElevatorDirection requestDirection = request.DestinationFloorLevel - request.DestinationFloorLevel > 0 ?
+                ElevatorDirection.Up : 
+                ElevatorDirection.Down;
+
+            var closestElevator = _elevators
+                .OrderBy((x) => Math.Abs(x.CurrentStatus.CurrentFloor - request.OriginFloorLevel)) // absolute value ensure the delta is alway positive
+                .First();
+
+            // To-do
+            // 1) Consider elevator going in the same direction first as the passenger request
+            // 2) Provided the elevator has not already passed the elevator
+
+            return closestElevator;
+        }
+        #endregion
 
     }
 }

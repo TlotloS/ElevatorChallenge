@@ -5,7 +5,7 @@
         /// <summary>
         /// The floor which the request is coming from
         /// </summary>
-        public int OrginFloorLevel { get; set; }
+        public int OriginFloorLevel { get; set; }
         /// <summary>
         /// The floor which the passenger(s) are going to
         /// </summary>

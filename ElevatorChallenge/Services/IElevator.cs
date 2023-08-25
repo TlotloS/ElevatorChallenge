@@ -23,6 +23,6 @@ namespace ElevatorChallenge.Services
         /// </summary>
         /// <returns></returns>
         Task HandlePassengersAsync();
-        Task AddPassengerRequest(int originFloor, int destinationFloor, int passengerCount);
+        Task QueuePassengerRequest(PassengerRequest passengerRequest);
     }
 }

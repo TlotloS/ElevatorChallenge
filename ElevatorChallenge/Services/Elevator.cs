@@ -1,10 +1,5 @@
 ﻿using ElevatorChallenge.Enums;
 using ElevatorChallenge.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ElevatorChallenge.Services
 {
@@ -12,6 +7,7 @@ namespace ElevatorChallenge.Services
     {
         /// </summary>
         public ElevatorStatus CurrentStatus { get; private set; }
+        private List<PassengerRequest> _passengerQueue;
         /// <summary>
         /// Default constructor
         /// </summary>
@@ -19,10 +15,10 @@ namespace ElevatorChallenge.Services
         {
            CurrentStatus = new ElevatorStatus
            {
-               CurrentlyActive = false,
                Direction = ElevatorDirection.None,
                CurrentFloor = 0,
            };
+           _passengerQueue = new List<PassengerRequest>();
         }
 
         /// <summary>
@@ -31,9 +27,10 @@ namespace ElevatorChallenge.Services
         /// <param name="initStatus"></param>
         public Elevator(ElevatorStatus initStatus) { CurrentStatus = initStatus; }
 
-        public Task AddPassengerRequest(int originFloor, int destinationFloor, int passengerCount)
+        public async Task QueuePassengerRequest(PassengerRequest passengerRequest)
         {
-            throw new NotImplementedException();
+            _passengerQueue.Add(passengerRequest);
+            await Task.Delay(TimeSpan.FromMilliseconds(1)); // Simulated delay
         }
 
         public async Task HandlePassengersAsync()
@@ -43,6 +40,9 @@ namespace ElevatorChallenge.Services
 
         public async Task<ElevatorStatus> MoveToNextLevelAsync()
         {
+            // 1) Get direction
+            // 2) Check form passenger
+
             // Asynchronously move to the next floor
             await Task.Delay(TimeSpan.FromSeconds(1)); // Simulated delay
             return new ElevatorStatus { };

@@ -24,7 +24,7 @@ namespace ElevatorChallenge.Helpers
 
             return new PassengerRequest
             {
-                OrginFloorLevel = originFloor,
+                OriginFloorLevel = originFloor,
                 DestinationFloorLevel = destinationFloor,
                 PassengerCount = passengers
             };
