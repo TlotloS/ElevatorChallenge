@@ -8,6 +8,7 @@ namespace ElevatorChallenge.Services
         /// </summary>
         public ElevatorStatus CurrentStatus { get; private set; }
         private List<PassengerRequest> _passengerQueue;
+        private List<int> _distinctFloors;
         /// <summary>
         /// Default constructor
         /// </summary>

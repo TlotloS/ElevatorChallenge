@@ -48,7 +48,7 @@ namespace ElevatorChallengeTests
         public void AddPassengerRequest_ValidRequest_ShouldAddRequestToList()
         {
             // Arrange
-            var passengerRequest = new PassengerRequest { PassengerCount = 2, DestinationFloorLevel = 10, OriginFloorLevel = 18 };
+            var passengerRequest = new PassengerRequest { PassengerCount = 2, DestinationFloorLevel = 1, OriginFloorLevel = 2 };
 
             // Act
             _controlCentreService.AddPickUpRequest(passengerRequest);
@@ -73,6 +73,37 @@ namespace ElevatorChallengeTests
             // Act & Assert
             Assert.ThrowsAny<Exception>(() => _controlCentreService.AddPickUpRequest(passengerRequest));
         }
+
+        [Fact]
+        public void AddPassengerRequest_InvalidOriginFloorLevel_ThrowsInvalidOperationException()
+        {
+            // Arrange
+            var passengerRequest = new PassengerRequest
+            {
+                PassengerCount = 1,
+                DestinationFloorLevel = _elevatorSystemConfig.FloorsCount + 5,
+                OriginFloorLevel = 1,
+            };
+
+            // Act & Assert
+            Assert.ThrowsAny<InvalidOperationException>(() => _controlCentreService.AddPickUpRequest(passengerRequest));
+        }
+
+        [Fact]
+        public void AddPassengerRequest_InvalidDestinaionFloorLevel_ThrowsInvalidOperationException()
+        {
+            // Arrange
+            var passengerRequest = new PassengerRequest
+            {
+                PassengerCount = 1,
+                DestinationFloorLevel = 1,
+                OriginFloorLevel = _elevatorSystemConfig.FloorsCount + 5,
+            };
+
+            // Act & Assert
+            Assert.ThrowsAny<InvalidOperationException>(() => _controlCentreService.AddPickUpRequest(passengerRequest));
+        }
+
 
         [Fact]
         public void AddPassengerRequest_PDestinationSameAsOrigin_PassengerQueRemainsTheSame()

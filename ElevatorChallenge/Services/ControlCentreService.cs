@@ -35,8 +35,16 @@ namespace ElevatorChallenge.Services
             if(request.PassengerCount >= _elevatorSystemConfig.MaxWeight) {
                 throw new Exception("Weight limit exceeded, please try again");
             }
+            if (request.OriginFloorLevel > _elevatorSystemConfig.FloorsCount || request.OriginFloorLevel <= 0)
+            {
+                throw new InvalidOperationException($"Invalid floor level {nameof(request.OriginFloorLevel)}");
+            }
+            if (request.DestinationFloorLevel > _elevatorSystemConfig.FloorsCount || request.DestinationFloorLevel <= 0)
+            {
+                throw new InvalidOperationException($"Invalid floor level {nameof(request.DestinationFloorLevel)}");
+            }
             // Ignore request to the same floor
-            if(request.OriginFloorLevel == request.DestinationFloorLevel) { return; }
+            if (request.OriginFloorLevel == request.DestinationFloorLevel) { return; }
             _pendingPassengerRequests.Add(request);
         }
 
