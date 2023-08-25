@@ -4,6 +4,7 @@ namespace ElevatorChallenge.Services
 {
     public interface IElevator
     {
+        public ElevatorStatus CurrentStatus { get; }
         /// <summary>
         /// Moves to the next floor - this includes a delay
         /// <list type="number">
@@ -23,6 +24,5 @@ namespace ElevatorChallenge.Services
         /// <returns></returns>
         Task HandlePassengersAsync();
         Task AddPassengerRequest(int originFloor, int destinationFloor, int passengerCount);
-        Task<ElevatorStatus> GetStatus();
     }
 }

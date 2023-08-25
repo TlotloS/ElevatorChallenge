@@ -1,10 +1,4 @@
 ﻿using ElevatorChallenge.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace ElevatorChallenge.Models
 {
     public class ElevatorStatus
@@ -16,7 +10,7 @@ namespace ElevatorChallenge.Models
         /// <summary>
         /// Indicates weather the elevator is currently in motion
         /// </summary>
-        public bool InService { get; set; }
+        public bool CurrentlyActive { get; set; }
         /// <summary>
         /// The diretion which the elevator is currently going
         /// </summary>

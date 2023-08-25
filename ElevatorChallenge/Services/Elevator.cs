@@ -1,4 +1,5 @@
-﻿using ElevatorChallenge.Models;
+﻿using ElevatorChallenge.Enums;
+using ElevatorChallenge.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,12 +10,28 @@ namespace ElevatorChallenge.Services
 {
     public class Elevator : IElevator
     {
-        public Task AddPassengerRequest(int originFloor, int destinationFloor, int passengerCount)
+        /// </summary>
+        public ElevatorStatus CurrentStatus { get; private set; }
+        /// <summary>
+        /// Default constructor
+        /// </summary>
+        public Elevator()
         {
-            throw new NotImplementedException();
+           CurrentStatus = new ElevatorStatus
+           {
+               CurrentlyActive = false,
+               Direction = ElevatorDirection.None,
+               CurrentFloor = 0,
+           };
         }
 
-        public Task<ElevatorStatus> GetStatus()
+        /// <summary>
+        /// Secondary constructor - will be used for unit test for now
+        /// </summary>
+        /// <param name="initStatus"></param>
+        public Elevator(ElevatorStatus initStatus) { CurrentStatus = initStatus; }
+
+        public Task AddPassengerRequest(int originFloor, int destinationFloor, int passengerCount)
         {
             throw new NotImplementedException();
         }
