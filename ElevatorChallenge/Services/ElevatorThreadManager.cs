@@ -23,8 +23,7 @@ public class ElevatorThreadManager : IElevatorThreadManager
             while (true)
             {
                 await elevator.MoveToNextLevelAsync();
-                // Add a delay or await depending on your elevator logic
-                await Task.Delay(TimeSpan.FromSeconds(4));
+                await Task.Delay(TimeSpan.FromSeconds(2));
             }
         });
     }
