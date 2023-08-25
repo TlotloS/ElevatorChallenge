@@ -110,7 +110,10 @@ namespace ElevatorChallenge.Services
             // If there are no floors to stop at in the current direction, change the direction
             if (!floorsToStopAtInDirection.Any())
             {
+                // toggle the direction
                 CurrentStatus.Direction = (direction == ElevatorDirection.Up) ? ElevatorDirection.Down : ElevatorDirection.Up;
+                // recursively call this method to get the new floors
+                return await GetFloorStoppingPointsWithinTravellingDirectionAsync();
             }
 
             return floorsToStopAtInDirection;
@@ -118,18 +121,5 @@ namespace ElevatorChallenge.Services
 
 
         private bool HasPendingRequests() => _passengerRequestQueue.Any() || _passengersInTransit.Any();
-        private ElevatorDirection DetermineElevatorDirection()
-        {
-            if (_passengerRequestQueue.Any())
-            {
-                return _passengerRequestQueue.First().OriginFloorLevel > CurrentStatus.CurrentFloor ? ElevatorDirection.Up : ElevatorDirection.Down;
-            }
-
-            if (_passengersInTransit.Any())
-            {
-                return _passengersInTransit.First().DestinationFloorLevel > CurrentStatus.CurrentFloor ? ElevatorDirection.Up : ElevatorDirection.Down;
-            }
-            return ElevatorDirection.None;
-        }
     }
 }
