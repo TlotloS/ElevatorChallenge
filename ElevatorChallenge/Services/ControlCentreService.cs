@@ -1,10 +1,5 @@
 ﻿using ElevatorChallenge.Enums;
 using ElevatorChallenge.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ElevatorChallenge.Services
 {
@@ -27,11 +22,14 @@ namespace ElevatorChallenge.Services
             _elevatorSystemConfig = elevatorSystemConfig;
             for (int i = 0; i < elevatorSystemConfig.ElevatorsCount; i++)
             {
-                _elevators.Add(new Elevator());
+                _elevators.Add(new Elevator(i));
             }
+
+            // start elevator
+            _elevatorThreadManager.StartElevatorThreadsAsync(_elevators);
         }
 
-        public void AddPickUpRequest(PassengerRequest request)
+        public async Task AddPickUpRequest(PassengerRequest request)
         {
             // Assume that the passenger will reconduct a valid request if they exceed the limit
             if(request.PassengerCount >= _elevatorSystemConfig.MaxWeight) {
@@ -48,11 +46,13 @@ namespace ElevatorChallenge.Services
             // Ignore request to the same floor
             if (request.OriginFloorLevel == request.DestinationFloorLevel) { return; }
             _pendingPassengerRequests.Add(request);
+            var elevator = GetClosestElevator(request);
+            await elevator.QueuePassengerRequest(request);
         }
 
         public IEnumerable<PassengerRequest> GetPendingPassengerRequests() => _pendingPassengerRequests;
         public ElevatorSystemConfig GetConfigDetails() => _elevatorSystemConfig;
-        public IEnumerable<IElevator> GetElevators() => _elevators;
+        public IEnumerable<ElevatorStatus> GetElevatorStatuses() => _elevators.Select(x => x.CurrentStatus);
 
         #region Private method
         private IElevator GetClosestElevator(PassengerRequest request)

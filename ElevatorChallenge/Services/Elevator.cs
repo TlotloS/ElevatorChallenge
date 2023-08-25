@@ -1,4 +1,5 @@
 ﻿using ElevatorChallenge.Enums;
+using ElevatorChallenge.Helpers;
 using ElevatorChallenge.Models;
 
 namespace ElevatorChallenge.Services
@@ -12,12 +13,14 @@ namespace ElevatorChallenge.Services
         /// <summary>
         /// Default constructor
         /// </summary>
-        public Elevator()
+        public Elevator(int elevatorIndex)
         {
             CurrentStatus = new ElevatorStatus
             {
                 Direction = ElevatorDirection.None,
                 CurrentFloor = 0,
+                ElevatorNumber = elevatorIndex,
+                Name = ElevatorNamesHelper.GetElevatorName(elevatorIndex),
             };
             _passengerRequestQueue = new List<PassengerRequest>();
             _passengersInTransit = new List<PassengerRequest>();

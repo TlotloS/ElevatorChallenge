@@ -41,7 +41,7 @@ namespace ElevatorChallengeTests
 
             // test inital state of arrays 
             Assert.Empty(controlCentreService.GetPendingPassengerRequests());
-            Assert.Equal(totalElevators, controlCentreService.GetElevators().Count());
+            Assert.Equal(totalElevators, controlCentreService.GetElevatorStatuses().Count());
         }
 
         [Fact]
@@ -71,7 +71,7 @@ namespace ElevatorChallengeTests
             };
 
             // Act & Assert
-            Assert.ThrowsAny<Exception>(() => _controlCentreService.AddPickUpRequest(passengerRequest));
+            Assert.ThrowsAnyAsync<Exception>(async () => await _controlCentreService.AddPickUpRequest(passengerRequest));
         }
 
         [Fact]
@@ -86,7 +86,7 @@ namespace ElevatorChallengeTests
             };
 
             // Act & Assert
-            Assert.ThrowsAny<InvalidOperationException>(() => _controlCentreService.AddPickUpRequest(passengerRequest));
+            Assert.ThrowsAnyAsync<InvalidOperationException>(async () => await _controlCentreService.AddPickUpRequest(passengerRequest));
         }
 
         [Fact]
@@ -101,7 +101,7 @@ namespace ElevatorChallengeTests
             };
 
             // Act & Assert
-            Assert.ThrowsAny<InvalidOperationException>(() => _controlCentreService.AddPickUpRequest(passengerRequest));
+            Assert.ThrowsAnyAsync<InvalidOperationException>(async() => await _controlCentreService.AddPickUpRequest(passengerRequest));
         }
 
 

@@ -1,4 +1,5 @@
 ﻿using ElevatorChallenge.Enums;
+using ElevatorChallenge.Helpers;
 using ElevatorChallenge.Models;
 using ElevatorChallenge.Services;
 
@@ -29,11 +30,12 @@ namespace ElevatorChallenge.Tests
         public void Elevator_InitaliseElevator_VerifyInitialStatus()
         {
             // arrange
-            var elevator = new Elevator();
+            var elevator = new Elevator(1);
             // assert
             var status = elevator.CurrentStatus;
             Assert.Equal(0, status.CurrentFloor);
             Assert.Equal(ElevatorDirection.None, status.Direction);
+            Assert.False(string.IsNullOrEmpty(status.Name));
         }
 
         [Fact]

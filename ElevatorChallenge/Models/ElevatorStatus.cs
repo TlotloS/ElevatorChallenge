@@ -3,6 +3,7 @@ namespace ElevatorChallenge.Models
 {
     public class ElevatorStatus
     {
+        public int ElevatorNumber { get; set; }
         /// <summary>
         /// Indicates the current floor which the elevator is on
         /// </summary>
@@ -15,5 +16,9 @@ namespace ElevatorChallenge.Models
         /// Count of people inside the elevator
         /// </summary>
         public int Load { get; set; }
+        /// <summary>
+        /// Elevator name
+        /// </summary>
+        public string Name { get; set; }
     }
 }

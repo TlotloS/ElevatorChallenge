@@ -3,6 +3,9 @@
 public class ElevatorThreadManager : IElevatorThreadManager
 {
     private List<Task> _elevatorTasks = new List<Task>();
+    public ElevatorThreadManager()
+    {
+    }
 
     public async Task StartElevatorThreadsAsync(List<IElevator> elevators)
     {

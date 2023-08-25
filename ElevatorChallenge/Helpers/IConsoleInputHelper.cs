@@ -7,11 +7,8 @@ using System.Threading.Tasks;
 
 namespace ElevatorChallenge.Helpers
 {
-    internal interface IConsoleInputHelper 
+    public interface IConsoleInputHelper 
     {
-        public PassengerRequest ConvertInputToRequest(string input);
-        public void UpdateInputSection();
-        public void UpdateOutputSection();
-
+        public void SubmitElevatorRequest(string input);
     }
 }

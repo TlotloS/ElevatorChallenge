@@ -12,13 +12,13 @@ namespace ElevatorChallenge.Services
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        public void AddPickUpRequest(PassengerRequest request);
+        Task AddPickUpRequest(PassengerRequest request);
         /// <summary>
         /// Return the awaiting passenger list
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<PassengerRequest> GetPendingPassengerRequests();
-        public ElevatorSystemConfig GetConfigDetails();
-        IEnumerable<IElevator> GetElevators();
+        IEnumerable<PassengerRequest> GetPendingPassengerRequests();
+        ElevatorSystemConfig GetConfigDetails();
+        IEnumerable<ElevatorStatus> GetElevatorStatuses();
     }
 }
