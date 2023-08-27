@@ -16,11 +16,9 @@ namespace ElevatorChallenge.Services
             IEnumerable<PassengerRequest> passengerRequestQueue,
             IEnumerable<PassengerRequest> passengersInTransit)
         {
-            var allPassengerRequests = passengerRequestQueue.Concat(passengersInTransit);
-            // Set the elevator status to Up by default : to do - use logic to change this
-            var defaultDirection = elevator.Direction == ElevatorDirection.None ? ElevatorDirection.Down : elevator.Direction;
+            var defaultDirection = elevator.Direction == ElevatorDirection.None ? ElevatorDirection.Up : elevator.Direction;
             //(1) If the elevator has 0 stopping points in the upward or downward direction
-            if (!allPassengerRequests.Any())
+            if (passengerRequestQueue.Any() == false && passengersInTransit.Any() == false)
             {
                 return new ElevatorTravelDetails
                 {
@@ -32,12 +30,12 @@ namespace ElevatorChallenge.Services
 
             //(2) if the elevator still has travel point in the direction then direction stays the same
             var floorToStopInCurrentDirection = await GetStoppingFloors(defaultDirection,
-                elevator.CurrentFloor, allPassengerRequests);
+                elevator.CurrentFloor, passengerRequestQueue, passengersInTransit);
             if (floorToStopInCurrentDirection.Any())
             {
                 return new ElevatorTravelDetails
                 {
-                    Direction = elevator.Direction,
+                    Direction = defaultDirection,
                     FloorsToStop = floorToStopInCurrentDirection,
                 };
             }
@@ -48,7 +46,7 @@ namespace ElevatorChallenge.Services
 
             //(3) if the elevator has travel points in the opposite direction  then direction is toggle
             var floorToStopInOppositeDirection = await GetStoppingFloors(oppositeDirection,
-                elevator.CurrentFloor, allPassengerRequests);
+                elevator.CurrentFloor, passengerRequestQueue, passengersInTransit);
             if (floorToStopInOppositeDirection.Any())
             {
                 return new ElevatorTravelDetails
@@ -73,24 +71,31 @@ namespace ElevatorChallenge.Services
         /// <param name="direction"></param>
         /// <param name="passengerRequests"></param>
         /// <returns>a list of integers representing the floors</returns>
-        public async Task<IEnumerable<int>> GetStoppingFloors(ElevatorDirection direction, int currentFloor,
-            IEnumerable<PassengerRequest> passengerRequests)
+        private async Task<IEnumerable<int>> GetStoppingFloors(ElevatorDirection direction, int currentFloor,
+            IEnumerable<PassengerRequest> passengerRequestQueue,
+            IEnumerable<PassengerRequest> passengersInTransit)
         {
             if (direction == ElevatorDirection.Up)
             {
-                var floorsToStopOn = passengerRequests
-                    .Where(x => x.OriginFloorLevel > currentFloor)
+                var floorsToStopOnPickups = passengerRequestQueue
+                    .Where(x => x.OriginFloorLevel >= currentFloor)
                     .Select(x => x.OriginFloorLevel);
 
-                return await Task.FromResult(floorsToStopOn);
+                var floorsToStopOnDropOffs = passengersInTransit
+                    .Where(x => x.OriginFloorLevel >= currentFloor)
+                    .Select(x => x.OriginFloorLevel);
+                return await Task.FromResult(floorsToStopOnPickups.Concat(floorsToStopOnDropOffs));
             }
             else if (direction == ElevatorDirection.Down)
             {
-                var floorsToStopOn = passengerRequests
-                    .Where(x => x.OriginFloorLevel < currentFloor)
+                var floorsToStopOnPickups = passengerRequestQueue
+                    .Where(x => x.OriginFloorLevel <= currentFloor)
                     .Select(x => x.OriginFloorLevel);
 
-                return await Task.FromResult(floorsToStopOn);
+                var floorsToStopOnDropOffs = passengersInTransit
+                    .Where(x => x.OriginFloorLevel <= currentFloor)
+                    .Select(x => x.OriginFloorLevel);
+                return await Task.FromResult(floorsToStopOnPickups.Concat(floorsToStopOnDropOffs));
             }
             return await Task.FromResult(new List<int>());
         }

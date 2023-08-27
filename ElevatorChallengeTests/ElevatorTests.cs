@@ -100,7 +100,7 @@ namespace ElevatorChallenge.Tests
         }
 
         [Fact]
-        public async Task TestHandlePassengersAsync_ElevatorHasPendingPickups_ExpectTheLoadToIncrease()
+        public async Task TestHandlePassengersAsync_ElevatorHasPendingPickupsOn_ExpectTheLoadToIncrease()
         {
             // Arrange
             var elevator = new Elevator(new ElevatorStatus

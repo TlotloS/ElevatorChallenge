@@ -42,8 +42,8 @@ namespace ElevatorChallenge.Services
 
         public async Task QueuePassengerRequest(PassengerRequest passengerRequest)
         {
-            await Task.Delay(TimeSpan.FromSeconds(1)); // Simulated delay
             _passengerRequestQueue.Add(passengerRequest);
+            await Task.Delay(TimeSpan.FromSeconds(0.25)); // Simulated delay
         }
         public async Task<ElevatorStatus> MoveToNextLevelAsync()
         {
@@ -51,7 +51,7 @@ namespace ElevatorChallenge.Services
             if (!HasPendingRequests())
             {
                 CurrentStatus.Direction = ElevatorDirection.None;
-                await Task.Delay(TimeSpan.FromSeconds(3)); // Simulated delay
+                await Task.Delay(TimeSpan.FromSeconds(_elevatorConfiguration.DelayInSeconds.MovingToNextLevel)); // Simulated delay
                 return CurrentStatus;
             }
 
@@ -69,6 +69,7 @@ namespace ElevatorChallenge.Services
                 CurrentStatus.Direction = elevatorTravelDetails.Direction;
             }
 
+
             // increment or decrement floor based on current floor and direction (moved)
             if (elevatorTravelDetails.Direction == ElevatorDirection.Up)
                 CurrentStatus.CurrentFloor += 1;
@@ -76,14 +77,15 @@ namespace ElevatorChallenge.Services
                 CurrentStatus.CurrentFloor -= 1;
             else return CurrentStatus;
 
+            // perform pickups
             if (elevatorTravelDetails.FloorsToStop.Any(floorLevel => CurrentStatus.CurrentFloor == floorLevel))
             {
-                await HandlePassengersAsync();
+                if(hasDropOffs() || hasPickUps())
+                {
+                    await HandlePassengersAsync();
+                }
             }
-            else
-            {
-                await Task.Delay(_elevatorConfiguration.DelayInSeconds.MovingToNextLevel); // Simulated delay
-            }
+            await Task.Delay(_elevatorConfiguration.DelayInSeconds.MovingToNextLevel); // Simulated delay
             return CurrentStatus;
         }
 
@@ -92,15 +94,14 @@ namespace ElevatorChallenge.Services
         private async Task HandlePassengersAsync()
         {
             // Move passengers around here
-            HandleDropOffs();
-            HandlePickups();
-            await Task.Delay(TimeSpan.FromSeconds(_elevatorConfiguration.DelayInSeconds.HandlingPassengers)); // Simulated delay
+            if (hasDropOffs()) { await HandleDropOffs(); }
+            if (hasPickUps()) { await HandlePickups(); }
         }
 
-        private void HandlePickups()
+        private async Task HandlePickups()
         {
             var pickUps = _passengerRequestQueue.Where(x => x.OriginFloorLevel == CurrentStatus.CurrentFloor).ToList();
-
+            if (!pickUps.Any()) { return; }
             // remove from queue
             foreach (var pickup in pickUps)
             {
@@ -114,9 +115,10 @@ namespace ElevatorChallenge.Services
                 CurrentStatus.Load += pickUps.Sum(x => x.PassengerCount);
             }
 
+            await Task.Delay(TimeSpan.FromSeconds(_elevatorConfiguration.DelayInSeconds.HandlingPassengers)); // Simulated delay
         }
 
-        private void HandleDropOffs()
+        private async Task HandleDropOffs()
         {
             var dropOffs = _passengersInTransit.Where(x => x.DestinationFloorLevel == CurrentStatus.CurrentFloor).ToList();
             CurrentStatus.Load -= dropOffs.Sum(x => x.PassengerCount);
@@ -124,9 +126,19 @@ namespace ElevatorChallenge.Services
             {
                 _passengersInTransit.Remove(dropoff);
             }
+            await Task.Delay(TimeSpan.FromSeconds(_elevatorConfiguration.DelayInSeconds.HandlingPassengers)); // Simulated delay
         }
 
-        private bool HasPendingRequests() => _passengerRequestQueue.Any() || _passengersInTransit.Any();
+        private bool hasDropOffs(){
+            var dropOffs = _passengersInTransit.Where(x => x.DestinationFloorLevel == CurrentStatus.CurrentFloor).ToList();
+            return dropOffs.Any();
+        }
+        private bool hasPickUps()
+        {
+            var pickUps = _passengerRequestQueue.Where(x => x.OriginFloorLevel == CurrentStatus.CurrentFloor).ToList();
+            return pickUps.Any();
+        }
+        public bool HasPendingRequests() => _passengerRequestQueue.Any() || _passengersInTransit.Any();
         #endregion
     }
 }

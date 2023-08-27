@@ -8,6 +8,7 @@ namespace ElevatorChallenge.Helpers
         private readonly IControlCentreService _controlCentreService;
         private readonly IElevatorThreadManager _elevatorThreadManager;
         private readonly IDisplayHelper _diplayHelper;
+        private List<ElevatorStatus> _elevatorStatuses = new List<ElevatorStatus>();
         public ConsoleInputHelper(IControlCentreService controlCentreService,
             IElevatorThreadManager elevatorThreadManager,
             IDisplayHelper displayHelper)
@@ -23,22 +24,33 @@ namespace ElevatorChallenge.Helpers
         }
         public async Task StartPrintingTaskAsync()
         {
+            Console.SetCursorPosition(0, 1); // Move cursor to a specific position1
+            Console.WriteLine("Input Section (originFloor; destinationFloor; passengers):");
+            Console.SetCursorPosition(0, 2);
             await Task.Run(async () =>
             {
                 await StartElevatorThreads();
                 while (true)
                 {
-                    // Clear the console and print elevator statuses
                     Console.Clear();
-                    var elevatorStatusList = await _controlCentreService.GetElevatorStatuses(); // Implement this async method to get the status list
-                    _diplayHelper.UpdateOutputSection(elevatorStatusList);
-                    await UpdateInputSection();
+                    var elevatorStatusList = await _controlCentreService.GetElevatorStatuses();
+                    _elevatorStatuses = elevatorStatusList.ToList();
+                    RefreshUI();
 
                     // Delay before updating again
-                    await Task.Delay(TimeSpan.FromSeconds(2.5));
+                    await Task.Delay(TimeSpan.FromSeconds(0.25));
+
+                    // Check for user input without blocking
+                    if (Console.KeyAvailable)
+                    {
+                        string input = Console.ReadLine();
+                        await ConvertInputToAndSubmitRequestAsync(input);
+                    }
                 }
             });
         }
+
+        public void RefreshUI() => _diplayHelper.UpdateOutputSection(_elevatorStatuses);
 
         private async Task ConvertInputToAndSubmitRequestAsync(string input)
         {

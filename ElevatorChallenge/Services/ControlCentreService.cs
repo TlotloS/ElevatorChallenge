@@ -53,7 +53,7 @@ namespace ElevatorChallenge.Services
         private Task<IElevator> GetClosestElevator(PassengerRequest request)
         {
             // determine direction of passenger request
-            ElevatorDirection requestDirection = request.DestinationFloorLevel - request.DestinationFloorLevel > 0 ?
+            ElevatorDirection requestDirection = request.DestinationFloorLevel - request.OriginFloorLevel > 0 ?
                 ElevatorDirection.Up :
                 ElevatorDirection.Down;
 
