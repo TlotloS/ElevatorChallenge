@@ -1,5 +1,6 @@
 using ElevatorChallenge.Models;
 using ElevatorChallenge.Services;
+using Microsoft.Extensions.Options;
 using Moq;
 
 namespace ElevatorChallengeTests
@@ -10,14 +11,27 @@ namespace ElevatorChallengeTests
         /// Declare instance for the default control centre object
         /// </summary>
         private readonly IControlCentreService _controlCentreService;
-        private readonly ElevatorSystemConfig _elevatorSystemConfig;
+        private readonly Mock<IOptions<ElevatorConfiguration>> _elevatorConfigMock;
         private readonly Mock<IElevatorThreadManager> _threadManager;
         public ControlCentreServiceTests()
         {
             // assign the defaul control centre service object
-            _elevatorSystemConfig = new ElevatorSystemConfig(5, 1, 6);
+            var elevatorConfigOptionsMock = new Mock<IOptions<ElevatorConfiguration>>();
+            elevatorConfigOptionsMock.Setup(x => x.Value).Returns(new ElevatorConfiguration
+            {
+                ElevatorMaximumWeight = 5,
+                TotalElevators = 5,
+                TotalFloors = 5,
+                DelayInSeconds = new DelayConfiguration
+                {
+                    HandlingPassengers = 5,
+                    MovingToNextLevel = 3,
+                }
+            });
+
             _threadManager = new Mock<IElevatorThreadManager>();
-            _controlCentreService = new ControlCentreService(_elevatorSystemConfig);
+            _elevatorConfigMock = elevatorConfigOptionsMock;
+            _controlCentreService = new ControlCentreService(elevatorConfigOptionsMock.Object);
         }
 
         [Fact]
@@ -27,17 +41,27 @@ namespace ElevatorChallengeTests
             var totalFloors = 50;
             var totalElevators = 2;
             var maxElevatorWeight = 8;
-            var sysConfig = new ElevatorSystemConfig(totalFloors, totalElevators, maxElevatorWeight);
+            _elevatorConfigMock.Setup(x => x.Value).Returns(new ElevatorConfiguration
+            {
+                ElevatorMaximumWeight = maxElevatorWeight,
+                TotalElevators = totalElevators,
+                TotalFloors = totalFloors,
+                DelayInSeconds = new DelayConfiguration
+                {
+                    HandlingPassengers = 5,
+                    MovingToNextLevel = 3,
+                }
+            });
             // act
-            var controlCentreService = new ControlCentreService(sysConfig);
+            var controlCentreService = new ControlCentreService(_elevatorConfigMock.Object);
 
             // assert
             var config = controlCentreService.GetConfigDetails();
             Assert.NotNull(config);
             Assert.NotNull(_controlCentreService);
-            Assert.Equal(totalFloors, config.FloorsCount);
-            Assert.Equal(totalElevators, config.ElevatorsCount);
-            Assert.Equal(maxElevatorWeight, config.MaxWeight);
+            Assert.Equal(totalFloors, config.TotalFloors);
+            Assert.Equal(totalElevators, config.TotalElevators);
+            Assert.Equal(maxElevatorWeight, config.ElevatorMaximumWeight);
 
             // test inital state of arrays 
             Assert.Empty(controlCentreService.GetPendingPassengerRequests());
@@ -66,7 +90,7 @@ namespace ElevatorChallengeTests
             // Arrange
             var passengerRequest = new PassengerRequest
             {
-                PassengerCount = _elevatorSystemConfig.MaxWeight + 1,
+                PassengerCount = _elevatorConfigMock.Object.Value.ElevatorMaximumWeight + 1,
                 DestinationFloorLevel = 10,
                 OriginFloorLevel = 18
             };
@@ -82,7 +106,7 @@ namespace ElevatorChallengeTests
             var passengerRequest = new PassengerRequest
             {
                 PassengerCount = 1,
-                DestinationFloorLevel = _elevatorSystemConfig.FloorsCount + 5,
+                DestinationFloorLevel = _elevatorConfigMock.Object.Value.TotalFloors + 5,
                 OriginFloorLevel = 1,
             };
 
@@ -98,7 +122,7 @@ namespace ElevatorChallengeTests
             {
                 PassengerCount = 1,
                 DestinationFloorLevel = 1,
-                OriginFloorLevel = _elevatorSystemConfig.FloorsCount + 5,
+                OriginFloorLevel = _elevatorConfigMock.Object.Value.TotalFloors + 5,
             };
 
             // Act & Assert
@@ -112,7 +136,7 @@ namespace ElevatorChallengeTests
             // Arrange
             var passengerRequest = new PassengerRequest
             {
-                PassengerCount = _elevatorSystemConfig.MaxWeight - 1,
+                PassengerCount = _elevatorConfigMock.Object.Value.ElevatorMaximumWeight - 1,
                 DestinationFloorLevel = 2,
                 OriginFloorLevel = 2
             };

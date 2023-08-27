@@ -18,7 +18,7 @@ namespace ElevatorChallenge.Services
         /// </summary>
         /// <returns></returns>
         IEnumerable<PassengerRequest> GetPendingPassengerRequests();
-        ElevatorSystemConfig GetConfigDetails();
+        ElevatorConfiguration GetConfigDetails();
         Task<IEnumerable<ElevatorStatus>> GetElevatorStatuses();
         Task<IEnumerable<IElevator>> GetElevators();
     }
