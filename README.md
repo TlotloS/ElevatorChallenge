@@ -23,7 +23,7 @@ Ready to hop in the Elevator Control App? Here’s what to do:
 - Watch elevator status updates in real-time.
 - Give elevator tasks by sending passenger requests.
 - Enjoy a tidy and straightforward console user interface.
-- **Unit Tests**: We didn’t stop at just making things work – we made sure they keep working. Our app comes with a bunch of tests to prove it!
+- **Unit Tests**: We didn’t stop at just making things work. This app comes with a bunch of tests to prove it!
 
 ## Configuration
 
