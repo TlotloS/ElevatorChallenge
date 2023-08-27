@@ -21,8 +21,8 @@ namespace ElevatorChallenge.Tests
                 TotalFloors = 5,
                 DelayInSeconds = new DelayConfiguration
                 {
-                    HandlingPassengers = 5,
-                    MovingToNextLevel = 3,
+                    HandlingPassengers = 0,
+                    MovingToNextLevel = 0,
                 }
             });
             _elevatorConfigMock = elevatorConfigOptionsMock;

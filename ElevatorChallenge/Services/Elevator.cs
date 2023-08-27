@@ -4,7 +4,7 @@ using ElevatorChallenge.Models;
 
 namespace ElevatorChallenge.Services
 {
-    public class Elevator : IElevator
+    public class Elevator : ElevatorMotion, IElevator
     {
         /// </summary>
         public ElevatorStatus CurrentStatus { get; private set; }
@@ -53,18 +53,27 @@ namespace ElevatorChallenge.Services
                 return CurrentStatus;
             }
 
-            var floorsInMyDirection = await GetFloorStoppingPointsWithinTravellingDirectionAsync();
-            if (!floorsInMyDirection.Any()) { return CurrentStatus; }
+            var elevatorTravelDetails = await GetElevatorTravelDetailsAsync(CurrentStatus,
+                _passengerRequestQueue,
+                _passengersInTransit);
 
+            if (!elevatorTravelDetails.FloorsToStop.Any()) {
+                CurrentStatus.Direction = ElevatorDirection.None;
+                return CurrentStatus;
+            }
+            else
+            {
+                CurrentStatus.Direction = elevatorTravelDetails.Direction;
+            }
 
             // increment or decrement floor based on current floor and direction (moved)
-            if (CurrentStatus.Direction == ElevatorDirection.Up)
+            if (elevatorTravelDetails.Direction == ElevatorDirection.Up)
                 CurrentStatus.CurrentFloor += 1;
-            else if (CurrentStatus.Direction == ElevatorDirection.Down)
+            else if (elevatorTravelDetails.Direction == ElevatorDirection.Down)
                 CurrentStatus.CurrentFloor -= 1;
             else return CurrentStatus;
 
-            if (floorsInMyDirection.Any(floorLevel => CurrentStatus.CurrentFloor == floorLevel))
+            if (elevatorTravelDetails.FloorsToStop.Any(floorLevel => CurrentStatus.CurrentFloor == floorLevel))
             {
                await HandlePassengersAsync();
             }
@@ -75,6 +84,7 @@ namespace ElevatorChallenge.Services
             return CurrentStatus;
         }
 
+        #region Private methods
 
         private async Task HandlePassengersAsync()
         {
@@ -112,63 +122,7 @@ namespace ElevatorChallenge.Services
             }
         }
 
-        private async Task<IEnumerable<int>> GetFloorStoppingPointsWithinTravellingDirectionAsync()
-        {
-            var direction = CurrentStatus.Direction;
-            // To-do : add a method to determine the direction
-            if(direction == ElevatorDirection.None) { direction = ElevatorDirection.Up; }
-            var floorsToStopAtInDirection = await DetermineElevatorTravelRoute(direction);
-
-            // If there are no floors to stop at in the current direction, change the direction
-            if (!floorsToStopAtInDirection.Any())
-            {
-                // toggle direction
-                direction = (direction == ElevatorDirection.Up) ? ElevatorDirection.Down : ElevatorDirection.Up;
-                CurrentStatus.Direction = direction;
-                var floorsToStopOppositeDirection = await DetermineElevatorTravelRoute(direction);
-
-                if (!floorsToStopOppositeDirection.Any())
-                {
-                    CurrentStatus.Direction = ElevatorDirection.None;
-                }
-                return floorsToStopOppositeDirection;
-            }
-            return floorsToStopAtInDirection;
-        }
-
-        private async Task<IEnumerable<int>> DetermineElevatorTravelRoute(ElevatorDirection direction)
-        {
-            var floorsToStopAtInDirection = new List<int>();
-            if (direction == ElevatorDirection.Up)
-            {
-                var floorsForPickUps = _passengerRequestQueue
-                    .Where(x => x.OriginFloorLevel > CurrentStatus.CurrentFloor)
-                    .Select(x => x.OriginFloorLevel);
-
-                var floorsForDropOffs = _passengersInTransit
-                    .Where(x => x.DestinationFloorLevel > CurrentStatus.CurrentFloor)
-                    .Select(x => x.DestinationFloorLevel);
-
-                floorsToStopAtInDirection.AddRange(floorsForPickUps);
-                floorsToStopAtInDirection.AddRange(floorsForDropOffs);
-            }
-            else if (direction == ElevatorDirection.Down)
-            {
-                var floorsForPickUps = _passengerRequestQueue
-                    .Where(x => x.OriginFloorLevel < CurrentStatus.CurrentFloor)
-                    .Select(x => x.OriginFloorLevel);
-
-                var floorsForDropOffs = _passengersInTransit
-                    .Where(x => x.DestinationFloorLevel < CurrentStatus.CurrentFloor)
-                    .Select(x => x.DestinationFloorLevel);
-
-                floorsToStopAtInDirection.AddRange(floorsForPickUps);
-                floorsToStopAtInDirection.AddRange(floorsForDropOffs);
-            }
-            return await Task.FromResult(floorsToStopAtInDirection);
-        }
-
-
         private bool HasPendingRequests() => _passengerRequestQueue.Any() || _passengersInTransit.Any();
+        #endregion
     }
 }
