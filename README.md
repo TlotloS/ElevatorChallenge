@@ -44,3 +44,4 @@ To customize the app:
        "MovingToNextLevel": 5
      }
    }
+![Animation](https://github.com/TlotloS/ElevatorChallenge/assets/28992353/50591a03-f562-4140-a2c8-9ebbb82836c5)
