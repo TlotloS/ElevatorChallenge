@@ -2,7 +2,7 @@
 
 namespace ElevatorChallenge.Helpers
 {
-    public interface IDisplayHelper
+    public interface IConsoleOutputHelper
     {
         void LogErrorToConsole(string input);
         void UpdateOutputSection(IEnumerable<ElevatorStatus> elevatorStatusList);

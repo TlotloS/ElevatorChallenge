@@ -28,7 +28,7 @@ namespace DividedConsoleApp
             var serviceProvider = new ServiceCollection()
             .AddSingleton(configuration)
             .AddScoped<IConsoleInputHelper, ConsoleInputHelper>()
-            .AddSingleton<IDisplayHelper, DisplayHelper>()
+            .AddSingleton<IConsoleOutputHelper, ConsoleOutputHelper>()
             .AddSingleton<IElevatorThreadManager, ElevatorThreadManager>()
             .AddSingleton<IControlCentreService, ControlCentreService>()
             // Configure elevator configuration using the options pattern

@@ -7,11 +7,11 @@ namespace ElevatorChallenge.Helpers
     {
         private readonly IControlCentreService _controlCentreService;
         private readonly IElevatorThreadManager _elevatorThreadManager;
-        private readonly IDisplayHelper _diplayHelper;
+        private readonly IConsoleOutputHelper _diplayHelper;
         private List<ElevatorStatus> _elevatorStatuses = new List<ElevatorStatus>();
         public ConsoleInputHelper(IControlCentreService controlCentreService,
             IElevatorThreadManager elevatorThreadManager,
-            IDisplayHelper displayHelper)
+            IConsoleOutputHelper displayHelper)
         {
             _controlCentreService = controlCentreService;
             _elevatorThreadManager = elevatorThreadManager;
@@ -71,13 +71,11 @@ namespace ElevatorChallenge.Helpers
                     DestinationFloorLevel = destinationFloor,
                     PassengerCount = passengers
                 });
-                _diplayHelper.LogErrorToConsole("Request submitted successfully");
-                await Task.Delay(TimeSpan.FromSeconds(0.5));
             }
             catch (Exception ex)
             {
                 _diplayHelper.LogErrorToConsole(ex.Message);
-                await Task.Delay(TimeSpan.FromSeconds(5));
+                await Task.Delay(TimeSpan.FromSeconds(0.5));
             }
         }
         private async Task UpdateInputSection()
