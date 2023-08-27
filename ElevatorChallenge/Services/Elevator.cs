@@ -69,6 +69,21 @@ namespace ElevatorChallenge.Services
                 CurrentStatus.Direction = elevatorTravelDetails.Direction;
             }
 
+            // Handle passenger
+            var hasPendingActionOnCurrentFloor = await
+                HasPendingRequestsFromCurrentFloor(CurrentStatus.CurrentFloor, 
+                _passengerRequestQueue,
+                _passengersInTransit);
+            if (hasPendingActionOnCurrentFloor)
+            {
+                await HandlePassengersAsync();
+                // check if there are any more pending requests
+                if (!HasPendingRequests())
+                {
+                    CurrentStatus.Direction = ElevatorDirection.None;
+                    return CurrentStatus;
+                }
+            }
 
             // increment or decrement floor based on current floor and direction (moved)
             if (elevatorTravelDetails.Direction == ElevatorDirection.Up)
@@ -77,14 +92,6 @@ namespace ElevatorChallenge.Services
                 CurrentStatus.CurrentFloor -= 1;
             else return CurrentStatus;
 
-            // perform pickups
-            if (elevatorTravelDetails.FloorsToStop.Any(floorLevel => CurrentStatus.CurrentFloor == floorLevel))
-            {
-                if(hasDropOffs() || hasPickUps())
-                {
-                    await HandlePassengersAsync();
-                }
-            }
             await Task.Delay(_elevatorConfiguration.DelayInSeconds.MovingToNextLevel); // Simulated delay
             return CurrentStatus;
         }

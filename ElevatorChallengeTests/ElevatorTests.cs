@@ -28,7 +28,7 @@ namespace ElevatorChallenge.Tests
         }
 
         [Fact]
-        public async Task TestMoveToNextLevelAsync_NoPendingRequests_ReturnsCurrentStatus()
+        public async Task MoveToNextLevelAsync_NoPendingRequests_ReturnsCurrentStatus()
         {
             // Arrange
             var elevator = new Elevator(new ElevatorStatus
@@ -59,7 +59,7 @@ namespace ElevatorChallenge.Tests
         }
 
         [Fact]
-        public async Task TestMoveToNextLevelAsync_InitialStateIsStationAndHasPendingRequests_ExpectDirectionSetAndFloorIncremented()
+        public async Task MoveToNextLevelAsync_InitialStateIsStationAndHasPendingRequests_ExpectDirectionSetAndFloorIncremented()
         {
             // Arrange
             var elevator = new Elevator(new ElevatorStatus
@@ -80,7 +80,28 @@ namespace ElevatorChallenge.Tests
         }
 
         [Fact]
-        public async Task TestHandlePassengersAsync_DirectionIsSetToUpWithPendingRequestInOppositeDirection_ExpectThatDirectionWillBeRevertedToDown()
+        public async Task MoveToNextLevelAsync_NewPassengerRequestIsAddedOnTheSameFloorAsTheElevator_ElevatorShouldProcessPassengers()
+        {
+            // Arrange
+            var elevator = new Elevator(new ElevatorStatus
+            {
+                Direction = ElevatorDirection.None,
+                CurrentFloor = 0
+            }, _elevatorConfigMock.Object.Value);
+
+            var passengerRequest = new PassengerRequest { OriginFloorLevel = 0, DestinationFloorLevel = 5, PassengerCount = 2 };
+            await elevator.QueuePassengerRequest(passengerRequest);
+
+            // Act
+            var result = await elevator.MoveToNextLevelAsync();
+
+            // Assert
+            Assert.Equal(2, result.Load);
+            Assert.Equal(ElevatorDirection.Up, result.Direction);
+        }
+
+        [Fact]
+        public async Task HandlePassengersAsync_DirectionIsSetToUpWithPendingRequestInOppositeDirection_ExpectThatDirectionWillBeRevertedToDown()
         {
             // Arrange
             var elevator = new Elevator(new ElevatorStatus
@@ -100,7 +121,7 @@ namespace ElevatorChallenge.Tests
         }
 
         [Fact]
-        public async Task TestHandlePassengersAsync_ElevatorHasPendingPickupsOn_ExpectTheLoadToIncrease()
+        public async Task HandlePassengersAsync_ElevatorHasPendingPickupsOn_ExpectTheLoadToIncrease()
         {
             // Arrange
             var elevator = new Elevator(new ElevatorStatus
@@ -116,10 +137,67 @@ namespace ElevatorChallenge.Tests
             await elevator.QueuePassengerRequest(passengerRequest2);
             // Act
             var firstMove = await elevator.MoveToNextLevelAsync();
-            Assert.Equal(2, firstMove.Load);
+            Assert.Equal(0, firstMove.Load);
 
             var secondMove = await elevator.MoveToNextLevelAsync();
-            Assert.Equal(5, secondMove.Load);
+            Assert.Equal(2, secondMove.Load);
+
+            var thirdMove = await elevator.MoveToNextLevelAsync();
+            Assert.Equal(5, thirdMove.Load);
+        }
+
+        [Fact]
+        public async Task MoveToNextLevelAsync_RequestMadeAtTheElevatorsCurrentFloor_EnsureThatElevatorTravelAccording()
+        {
+            // Arrange
+            var elevator = new Elevator(new ElevatorStatus
+            {
+                Direction = ElevatorDirection.Up,
+                CurrentFloor = 0,
+                Load = 0,
+            }, _elevatorConfigMock.Object.Value);
+
+            var passengerRequest = new PassengerRequest { OriginFloorLevel = 0, DestinationFloorLevel = 8, PassengerCount = 6 };
+            await elevator.QueuePassengerRequest(passengerRequest);
+            // Act
+            var firstMove = await elevator.MoveToNextLevelAsync();
+            Assert.Equal(6, firstMove.Load);
+            Assert.Equal(1, firstMove.CurrentFloor);
+            Assert.Equal(ElevatorDirection.Up, firstMove.Direction);
+
+            var secondMove = await elevator.MoveToNextLevelAsync();
+            Assert.Equal(6, secondMove.Load);
+            Assert.Equal(2, secondMove.CurrentFloor);
+            Assert.Equal(ElevatorDirection.Up, secondMove.Direction);
+
+            var thirdMove = await elevator.MoveToNextLevelAsync();
+            Assert.Equal(6, thirdMove.Load);
+            Assert.Equal(2, thirdMove.CurrentFloor);
+            Assert.Equal(ElevatorDirection.Up, thirdMove.Direction);
+        }
+
+        [Fact]
+        public async Task MoveToNextLevelAsync_ElevatorArrivesAtRequestDestinationLeve_TheElevatorLoadMustDecrease()
+        {
+            // Arrange
+            var elevator = new Elevator(new ElevatorStatus
+            {
+                Direction = ElevatorDirection.Up,
+                CurrentFloor = 0,
+                Load = 0,
+            }, _elevatorConfigMock.Object.Value);
+
+            var passengerRequest = new PassengerRequest { OriginFloorLevel = 0, DestinationFloorLevel = 1, PassengerCount = 6 };
+            await elevator.QueuePassengerRequest(passengerRequest);
+            // Act
+            var firstMove = await elevator.MoveToNextLevelAsync(); // picks up passenger & moves to next floor
+            Assert.Equal(6, firstMove.Load);
+            Assert.Equal(1, firstMove.CurrentFloor);
+            Assert.Equal(ElevatorDirection.Up, firstMove.Direction);
+
+            var secondMove = await elevator.MoveToNextLevelAsync(); // drops of passengers & set direction to stationery
+            Assert.Equal(0, secondMove.Load);
+            Assert.Equal(ElevatorDirection.None, secondMove.Direction);
         }
     }
 }

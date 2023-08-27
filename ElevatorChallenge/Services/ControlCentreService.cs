@@ -59,7 +59,8 @@ namespace ElevatorChallenge.Services
 
             var closestElevator = _elevators
                 .OrderBy((x) => Math.Abs(x.CurrentStatus.CurrentFloor - request.OriginFloorLevel)) // absolute value ensure the delta is alway positive
-                .First();
+                .First(x => x.CurrentStatus.Direction == requestDirection || 
+                x.CurrentStatus.Direction == ElevatorDirection.None);
 
             // To-do
             // 1) Consider elevator going in the same direction first as the passenger request

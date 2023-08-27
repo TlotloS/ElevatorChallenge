@@ -3,7 +3,7 @@ using ElevatorChallenge.Services;
 using Microsoft.Extensions.Options;
 using Moq;
 
-namespace ElevatorChallengeTests
+namespace ElevatorChallenge.Tests
 {
     public class ControlCentreServiceTests
     {

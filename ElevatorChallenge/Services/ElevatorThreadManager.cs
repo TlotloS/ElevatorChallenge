@@ -25,6 +25,7 @@ public class ElevatorThreadManager : IElevatorThreadManager
                 if(elevator.HasPendingRequests())
                 {
                     await elevator.MoveToNextLevelAsync();
+                    await Task.Delay(TimeSpan.FromSeconds(2));
                 }
             }
         });

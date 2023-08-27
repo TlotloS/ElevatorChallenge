@@ -64,6 +64,29 @@ namespace ElevatorChallenge.Services
         }
 
         /// <summary>
+        /// Return list of pending requests from current floor
+        /// </summary>
+        /// <param name="direction"></param>
+        /// <param name="currentFloor"></param>
+        /// <param name="passengerRequestQueue"></param>
+        /// <param name="passengersInTransit"></param>
+        /// <returns></returns>
+        public async Task<bool> HasPendingRequestsFromCurrentFloor(int currentFloor,
+            IEnumerable<PassengerRequest> passengerRequestQueue,
+            IEnumerable<PassengerRequest> passengersInTransit)
+        {
+
+            var floorsToStopOnPickups = passengerRequestQueue
+                .Where(x => x.OriginFloorLevel == currentFloor)
+                .Select(x => x.OriginFloorLevel);
+
+            var floorsToStopOnDropOffs = passengersInTransit
+                .Where(x => x.DestinationFloorLevel == currentFloor)
+                .Select(x => x.DestinationFloorLevel);
+            return await Task.FromResult((floorsToStopOnPickups.Concat(floorsToStopOnDropOffs).Any()));
+        }
+
+        /// <summary>
         /// Takes the current elevator direction and a list of PassengerRequest 
         /// objects and returns a list of integers representing the floors
         /// where the elevator will stop.
@@ -82,8 +105,8 @@ namespace ElevatorChallenge.Services
                     .Select(x => x.OriginFloorLevel);
 
                 var floorsToStopOnDropOffs = passengersInTransit
-                    .Where(x => x.OriginFloorLevel >= currentFloor)
-                    .Select(x => x.OriginFloorLevel);
+                    .Where(x => x.DestinationFloorLevel >= currentFloor)
+                    .Select(x => x.DestinationFloorLevel);
                 return await Task.FromResult(floorsToStopOnPickups.Concat(floorsToStopOnDropOffs));
             }
             else if (direction == ElevatorDirection.Down)
@@ -93,12 +116,11 @@ namespace ElevatorChallenge.Services
                     .Select(x => x.OriginFloorLevel);
 
                 var floorsToStopOnDropOffs = passengersInTransit
-                    .Where(x => x.OriginFloorLevel <= currentFloor)
-                    .Select(x => x.OriginFloorLevel);
+                    .Where(x => x.DestinationFloorLevel <= currentFloor)
+                    .Select(x => x.DestinationFloorLevel);
                 return await Task.FromResult(floorsToStopOnPickups.Concat(floorsToStopOnDropOffs));
             }
             return await Task.FromResult(new List<int>());
         }
-
     }
 }
