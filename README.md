@@ -7,7 +7,6 @@ Welcome to the Elevator Control App! This cool app lets you play around with ele
 - [Get Started](#get-started)
 - [Features](#features)
 - [Configuration](#configuration)
-- [Tests](#tests)
 
 ## Get Started
 
