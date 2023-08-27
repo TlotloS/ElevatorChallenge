@@ -30,13 +30,13 @@ namespace ElevatorChallenge.Services
             {
                 throw new Exception("Weight limit exceeded, please try again");
             }
-            if (request.OriginFloorLevel > _config.TotalFloors || request.OriginFloorLevel < 0)
+            if (request.OriginFloorLevel >= _config.TotalFloors || request.OriginFloorLevel < 0)
             {
-                throw new InvalidOperationException($"Invalid floor level {nameof(request.OriginFloorLevel)}");
+                throw new InvalidOperationException($"Invalid origin floor level {nameof(request.OriginFloorLevel)}");
             }
-            if (request.DestinationFloorLevel > _config.TotalFloors || request.DestinationFloorLevel < 0)
+            if (request.DestinationFloorLevel >= _config.TotalFloors || request.DestinationFloorLevel < 0)
             {
-                throw new InvalidOperationException($"Invalid floor level {nameof(request.DestinationFloorLevel)}");
+                throw new InvalidOperationException($"Invalid destinatino floor level {nameof(request.DestinationFloorLevel)}");
             }
             // Ignore request to the same floor
             if (request.OriginFloorLevel == request.DestinationFloorLevel) { return; }
@@ -57,15 +57,28 @@ namespace ElevatorChallenge.Services
                 ElevatorDirection.Up :
                 ElevatorDirection.Down;
 
-            var closestElevator = _elevators
-                .OrderBy((x) => Math.Abs(x.CurrentStatus.CurrentFloor - request.OriginFloorLevel)) // absolute value ensure the delta is alway positive
-                .First(x => x.CurrentStatus.Direction == requestDirection || 
-                x.CurrentStatus.Direction == ElevatorDirection.None);
-
-            // To-do
-            // 1) Consider elevator going in the same direction first as the passenger request
+            // 1) Consider elevator going in the same direction as the passenger request first
             // 2) Provided the elevator has not already passed the elevator
+            var elevatorsTravellingTowardRequestLevel = _elevators.Where(x => x.CurrentStatus.Direction == requestDirection &&
+                (
+                    (requestDirection == ElevatorDirection.Up && x.CurrentStatus.CurrentFloor <= request.OriginFloorLevel)
+                    ||
+                    (requestDirection == ElevatorDirection.Down && x.CurrentStatus.CurrentFloor >= request.OriginFloorLevel)
+                )
+            );
+            IElevator closestElevator;
 
+            if (elevatorsTravellingTowardRequestLevel.Any()) {
+                closestElevator =  elevatorsTravellingTowardRequestLevel
+                // absolute delte will give us the distacne
+                .OrderBy((x) => Math.Abs(x.CurrentStatus.CurrentFloor - request.OriginFloorLevel))
+                .First();
+            }else
+            {
+                closestElevator = _elevators
+                                .OrderBy((x) => Math.Abs(x.CurrentStatus.CurrentFloor - request.OriginFloorLevel)) // absolute value ensure the delta is alway positive
+                                .First();
+            }
             return Task.FromResult(closestElevator);
         }
 

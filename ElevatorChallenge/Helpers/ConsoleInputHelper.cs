@@ -35,7 +35,7 @@ namespace ElevatorChallenge.Helpers
                     Console.Clear();
                     var elevatorStatusList = await _controlCentreService.GetElevatorStatuses();
                     _elevatorStatuses = elevatorStatusList.ToList();
-                    RefreshUI();
+                    _diplayHelper.UpdateOutputSection(_elevatorStatuses);
 
                     // Delay before updating again
                     await Task.Delay(TimeSpan.FromSeconds(0.25));
@@ -49,8 +49,6 @@ namespace ElevatorChallenge.Helpers
                 }
             });
         }
-
-        public void RefreshUI() => _diplayHelper.UpdateOutputSection(_elevatorStatuses);
 
         private async Task ConvertInputToAndSubmitRequestAsync(string input)
         {
@@ -73,10 +71,13 @@ namespace ElevatorChallenge.Helpers
                     DestinationFloorLevel = destinationFloor,
                     PassengerCount = passengers
                 });
+                _diplayHelper.LogErrorToConsole("Request submitted successfully");
+                await Task.Delay(TimeSpan.FromSeconds(0.5));
             }
             catch (Exception ex)
             {
                 _diplayHelper.LogErrorToConsole(ex.Message);
+                await Task.Delay(TimeSpan.FromSeconds(5));
             }
         }
         private async Task UpdateInputSection()

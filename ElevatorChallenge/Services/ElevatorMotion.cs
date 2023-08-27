@@ -42,7 +42,7 @@ namespace ElevatorChallenge.Services
 
 
             // toggle direction ~ try the other direction
-            var oppositeDirection = (elevator.Direction == ElevatorDirection.Up) ? ElevatorDirection.Down : ElevatorDirection.Up;
+            var oppositeDirection = (defaultDirection == ElevatorDirection.Up) ? ElevatorDirection.Down : ElevatorDirection.Up;
 
             //(3) if the elevator has travel points in the opposite direction  then direction is toggle
             var floorToStopInOppositeDirection = await GetStoppingFloors(oppositeDirection,

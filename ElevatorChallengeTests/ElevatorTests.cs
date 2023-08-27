@@ -172,12 +172,12 @@ namespace ElevatorChallenge.Tests
 
             var thirdMove = await elevator.MoveToNextLevelAsync();
             Assert.Equal(6, thirdMove.Load);
-            Assert.Equal(2, thirdMove.CurrentFloor);
+            Assert.Equal(3, thirdMove.CurrentFloor);
             Assert.Equal(ElevatorDirection.Up, thirdMove.Direction);
         }
 
         [Fact]
-        public async Task MoveToNextLevelAsync_ElevatorArrivesAtRequestDestinationLeve_TheElevatorLoadMustDecrease()
+        public async Task MoveToNextLevelAsync_ElevatorArrivesAtRequestDestinationLevel_TheElevatorLoadMustDecrease()
         {
             // Arrange
             var elevator = new Elevator(new ElevatorStatus
@@ -198,6 +198,36 @@ namespace ElevatorChallenge.Tests
             var secondMove = await elevator.MoveToNextLevelAsync(); // drops of passengers & set direction to stationery
             Assert.Equal(0, secondMove.Load);
             Assert.Equal(ElevatorDirection.None, secondMove.Direction);
+        }
+
+        [Fact]
+        public async Task MoveToNextLevelAsync_TestForElevatorGoingUpToPickupPassengerThatWantToComeDown_TheElevatorMustBeginToComeDownAfterPickup()
+        {
+            // Arrange
+            var elevator = new Elevator(new ElevatorStatus
+            {
+                Direction = ElevatorDirection.Up,
+                CurrentFloor = 0,
+                Load = 0,
+            }, _elevatorConfigMock.Object.Value);
+
+            var passengerRequest = new PassengerRequest { OriginFloorLevel = 2, DestinationFloorLevel = 0, PassengerCount = 6 };
+            await elevator.QueuePassengerRequest(passengerRequest);
+            // Act
+            var firstMove = await elevator.MoveToNextLevelAsync(); // moves to 1st floor
+            Assert.Equal(0, firstMove.Load);
+            Assert.Equal(1, firstMove.CurrentFloor);
+            Assert.Equal(ElevatorDirection.Up, firstMove.Direction);
+
+            var secondMove = await elevator.MoveToNextLevelAsync(); // moves to 2nd floor
+            Assert.Equal(0, firstMove.Load);
+            Assert.Equal(2, firstMove.CurrentFloor);
+            Assert.Equal(ElevatorDirection.Up, firstMove.Direction);
+
+            var third = await elevator.MoveToNextLevelAsync(); // picks up passenger and begins to down
+            Assert.Equal(6, secondMove.Load);
+            Assert.Equal(1, firstMove.CurrentFloor);
+            Assert.Equal(ElevatorDirection.Down, firstMove.Direction);
         }
     }
 }

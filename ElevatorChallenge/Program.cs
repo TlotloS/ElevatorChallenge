@@ -10,7 +10,11 @@ namespace DividedConsoleApp
     {
         static async Task Main(string[] args)
         {
-            Console.WriteLine("Welcome to the Divided Console App!");
+            Console.WriteLine("Welcome to the Science Lab Elevator Experiment!");
+            await Task.Delay(TimeSpan.FromSeconds(2));
+            Console.WriteLine("Enter: 'OriginLevel;DestinationFloorLevel;NumberOfPeople' to request a lift");
+            Console.WriteLine("E.g: '1;4;2' to request an elevator from the 1st floor transporting 2 people to the 4th floor");
+            await Task.Delay(TimeSpan.FromSeconds(1));
             // Configure the
             IConfiguration configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())

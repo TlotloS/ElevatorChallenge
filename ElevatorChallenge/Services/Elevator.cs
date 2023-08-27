@@ -54,6 +54,21 @@ namespace ElevatorChallenge.Services
                 await Task.Delay(TimeSpan.FromSeconds(_elevatorConfiguration.DelayInSeconds.MovingToNextLevel)); // Simulated delay
                 return CurrentStatus;
             }
+            // Process passenger on the level before moving
+            var hasPendingActionOnCurrentFloor = await
+                HasPendingRequestsFromCurrentFloor(CurrentStatus.CurrentFloor,
+                _passengerRequestQueue,
+                _passengersInTransit);
+            if (hasPendingActionOnCurrentFloor)
+            {
+                await HandlePassengersAsync();
+                // check if there are any more pending requests
+                if (!HasPendingRequests())
+                {
+                    CurrentStatus.Direction = ElevatorDirection.None;
+                    return CurrentStatus;
+                }
+            }
 
             var elevatorTravelDetails = await GetElevatorTravelDetailsAsync(CurrentStatus,
                 _passengerRequestQueue,
@@ -67,22 +82,6 @@ namespace ElevatorChallenge.Services
             else
             {
                 CurrentStatus.Direction = elevatorTravelDetails.Direction;
-            }
-
-            // Handle passenger
-            var hasPendingActionOnCurrentFloor = await
-                HasPendingRequestsFromCurrentFloor(CurrentStatus.CurrentFloor, 
-                _passengerRequestQueue,
-                _passengersInTransit);
-            if (hasPendingActionOnCurrentFloor)
-            {
-                await HandlePassengersAsync();
-                // check if there are any more pending requests
-                if (!HasPendingRequests())
-                {
-                    CurrentStatus.Direction = ElevatorDirection.None;
-                    return CurrentStatus;
-                }
             }
 
             // increment or decrement floor based on current floor and direction (moved)

@@ -8,18 +8,21 @@ namespace ElevatorChallenge.Helpers
     {
         public void LogErrorToConsole(string input)
         {
-            Console.SetCursorPosition(0, 10);
-            Console.WriteLine("Output Section:");
             Console.SetCursorPosition(0, 3);
             Console.WriteLine($"Something went wrong: {input}");
+            Console.SetCursorPosition(0, 2);
         }
         public void UpdateOutputSection(IEnumerable<ElevatorStatus> elevatorStatusList)
         {
+            Console.SetCursorPosition(0, 1); // Move cursor to a specific position1
+            Console.WriteLine("Input Section (originFloor; destinationFloor; passengers):");
+            // Perform output logic or display information
+
             Console.SetCursorPosition(0, 10);
             Console.WriteLine("Output Section:");
-            Console.SetCursorPosition(0, 11);
-            // Perform output logic or display information
             PrintElevatorStatusMatrix(elevatorStatusList);
+
+            Console.SetCursorPosition(0, 2);
         }
 
         private void PrintElevatorStatusMatrix(IEnumerable<ElevatorStatus> elevatorStatusList)
