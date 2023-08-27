@@ -126,7 +126,7 @@ namespace ElevatorChallengeTests
             };
 
             // Act & Assert
-            Assert.ThrowsAnyAsync<InvalidOperationException>(async() => await _controlCentreService.AddPickUpRequest(passengerRequest));
+            Assert.ThrowsAnyAsync<InvalidOperationException>(async () => await _controlCentreService.AddPickUpRequest(passengerRequest));
         }
 
 

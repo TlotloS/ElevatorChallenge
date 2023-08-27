@@ -1,10 +1,5 @@
 ﻿using ElevatorChallenge.Enums;
 using ElevatorChallenge.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ElevatorChallenge.Services
 {
@@ -36,7 +31,7 @@ namespace ElevatorChallenge.Services
 
 
             //(2) if the elevator still has travel point in the direction then direction stays the same
-            var floorToStopInCurrentDirection = await GetStoppingFloors(defaultDirection, 
+            var floorToStopInCurrentDirection = await GetStoppingFloors(defaultDirection,
                 elevator.CurrentFloor, allPassengerRequests);
             if (floorToStopInCurrentDirection.Any())
             {
@@ -52,7 +47,7 @@ namespace ElevatorChallenge.Services
             var oppositeDirection = (elevator.Direction == ElevatorDirection.Up) ? ElevatorDirection.Down : ElevatorDirection.Up;
 
             //(3) if the elevator has travel points in the opposite direction  then direction is toggle
-            var floorToStopInOppositeDirection = await GetStoppingFloors(oppositeDirection, 
+            var floorToStopInOppositeDirection = await GetStoppingFloors(oppositeDirection,
                 elevator.CurrentFloor, allPassengerRequests);
             if (floorToStopInOppositeDirection.Any())
             {
@@ -78,7 +73,7 @@ namespace ElevatorChallenge.Services
         /// <param name="direction"></param>
         /// <param name="passengerRequests"></param>
         /// <returns>a list of integers representing the floors</returns>
-        public async Task<IEnumerable<int>> GetStoppingFloors(ElevatorDirection direction, int currentFloor, 
+        public async Task<IEnumerable<int>> GetStoppingFloors(ElevatorDirection direction, int currentFloor,
             IEnumerable<PassengerRequest> passengerRequests)
         {
             if (direction == ElevatorDirection.Up)

@@ -3,7 +3,6 @@ using ElevatorChallenge.Models;
 using ElevatorChallenge.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System;
 
 namespace DividedConsoleApp
 {

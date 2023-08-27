@@ -1,6 +1,5 @@
 ﻿using ElevatorChallenge.Enums;
 using ElevatorChallenge.Models;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 
 namespace ElevatorChallenge.Services
@@ -20,7 +19,7 @@ namespace ElevatorChallenge.Services
             _config = config.Value;
             for (int i = 0; i < _config.TotalElevators; i++)
             {
-                _elevators.Add(new Elevator(i,_config));
+                _elevators.Add(new Elevator(i, _config));
             }
         }
 

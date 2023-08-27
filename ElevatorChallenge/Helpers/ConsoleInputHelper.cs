@@ -1,5 +1,4 @@
-﻿using ElevatorChallenge.Enums;
-using ElevatorChallenge.Models;
+﻿using ElevatorChallenge.Models;
 using ElevatorChallenge.Services;
 
 namespace ElevatorChallenge.Helpers
@@ -9,7 +8,7 @@ namespace ElevatorChallenge.Helpers
         private readonly IControlCentreService _controlCentreService;
         private readonly IElevatorThreadManager _elevatorThreadManager;
         private readonly IDisplayHelper _diplayHelper;
-        public ConsoleInputHelper(IControlCentreService controlCentreService, 
+        public ConsoleInputHelper(IControlCentreService controlCentreService,
             IElevatorThreadManager elevatorThreadManager,
             IDisplayHelper displayHelper)
         {

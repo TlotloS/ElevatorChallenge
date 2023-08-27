@@ -32,7 +32,8 @@ namespace ElevatorChallenge.Services
         /// Secondary constructor - will be used for unit test for now
         /// </summary>
         /// <param name="initStatus"></param>
-        public Elevator(ElevatorStatus initStatus, ElevatorConfiguration elevatorConfiguration) {
+        public Elevator(ElevatorStatus initStatus, ElevatorConfiguration elevatorConfiguration)
+        {
             CurrentStatus = initStatus;
             _passengersInTransit = new List<PassengerRequest>();
             _passengerRequestQueue = new List<PassengerRequest>();
@@ -47,7 +48,8 @@ namespace ElevatorChallenge.Services
         public async Task<ElevatorStatus> MoveToNextLevelAsync()
         {
             // if there aren't any pending request return the current status
-            if (!HasPendingRequests()) { 
+            if (!HasPendingRequests())
+            {
                 CurrentStatus.Direction = ElevatorDirection.None;
                 await Task.Delay(TimeSpan.FromSeconds(3)); // Simulated delay
                 return CurrentStatus;
@@ -57,7 +59,8 @@ namespace ElevatorChallenge.Services
                 _passengerRequestQueue,
                 _passengersInTransit);
 
-            if (!elevatorTravelDetails.FloorsToStop.Any()) {
+            if (!elevatorTravelDetails.FloorsToStop.Any())
+            {
                 CurrentStatus.Direction = ElevatorDirection.None;
                 return CurrentStatus;
             }
@@ -75,7 +78,7 @@ namespace ElevatorChallenge.Services
 
             if (elevatorTravelDetails.FloorsToStop.Any(floorLevel => CurrentStatus.CurrentFloor == floorLevel))
             {
-               await HandlePassengersAsync();
+                await HandlePassengersAsync();
             }
             else
             {
@@ -105,9 +108,10 @@ namespace ElevatorChallenge.Services
             }
 
             // Handle passengers who were picked up on the current floor - move them to the _passengersInTransit list
-            if (pickUps.Any()) { 
+            if (pickUps.Any())
+            {
                 _passengersInTransit.AddRange(pickUps);
-                CurrentStatus.Load += pickUps.Sum(x => x.PassengerCount) ;
+                CurrentStatus.Load += pickUps.Sum(x => x.PassengerCount);
             }
 
         }
