@@ -3,7 +3,7 @@ using ElevatorChallenge.Models;
 
 namespace ElevatorChallenge.Services
 {
-    public class ElevatorMotion
+    public class ElevatorMotion : IElevatorMotion
     {
         /// <summary>
         /// Get the travel elevator travel information (Direction and floors to stop on)
@@ -63,14 +63,7 @@ namespace ElevatorChallenge.Services
             };
         }
 
-        /// <summary>
-        /// Return list of pending requests from current floor
-        /// </summary>
-        /// <param name="direction"></param>
-        /// <param name="currentFloor"></param>
-        /// <param name="passengerRequestQueue"></param>
-        /// <param name="passengersInTransit"></param>
-        /// <returns></returns>
+        ///<inheritdoc/>
         public async Task<bool> HasPendingRequestsFromCurrentFloor(int currentFloor,
             IEnumerable<PassengerRequest> passengerRequestQueue,
             IEnumerable<PassengerRequest> passengersInTransit)
@@ -87,13 +80,13 @@ namespace ElevatorChallenge.Services
         }
 
         /// <summary>
-        /// Takes the current elevator direction and a list of PassengerRequest 
-        /// objects and returns a list of integers representing the floors
-        /// where the elevator will stop.
+        /// /// Determined which floors the elevator should stop in the current travelling direction
         /// </summary>
-        /// <param name="direction"></param>
-        /// <param name="passengerRequests"></param>
-        /// <returns>a list of integers representing the floors</returns>
+        /// <param name="direction">Direction which the elevator instance is moving in</param>
+        /// <param name="currentFloor">Current floor of the elevator</param>
+        /// <param name="passengerRequestQueue">Passenger that are awaiting pickup</param>
+        /// <param name="passengersInTransit">Passengers that are in transit - pendinging dropoff</param>
+        /// <returns></returns>
         private async Task<IEnumerable<int>> GetStoppingFloors(ElevatorDirection direction, int currentFloor,
             IEnumerable<PassengerRequest> passengerRequestQueue,
             IEnumerable<PassengerRequest> passengersInTransit)
