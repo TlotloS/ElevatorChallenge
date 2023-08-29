@@ -1,5 +1,6 @@
 using ElevatorChallenge.Models;
-using ElevatorChallenge.Services;
+using ElevatorChallenge.Services.Implementations;
+using ElevatorChallenge.Services.Interfaces;
 using Microsoft.Extensions.Options;
 using Moq;
 

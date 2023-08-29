@@ -1,10 +1,11 @@
 ﻿using ElevatorChallenge.Helpers;
 using ElevatorChallenge.Models;
-using ElevatorChallenge.Services;
+using ElevatorChallenge.Services.Implementations;
+using ElevatorChallenge.Services.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace DividedConsoleApp
+namespace ElevatorChallenge
 {
     class Program
     {
@@ -27,7 +28,7 @@ namespace DividedConsoleApp
             // dependencies in your application.
             var serviceProvider = new ServiceCollection()
             .AddSingleton(configuration)
-            .AddScoped<IConsoleInputHelper, ConsoleInputHelper>()
+            .AddScoped<IOperationService, OperationService>()
             .AddSingleton<IConsoleOutputHelper, ConsoleOutputHelper>()
             .AddSingleton<IElevatorThreadManager, ElevatorThreadManager>()
             .AddSingleton<IControlCentreService, ControlCentreService>()
@@ -37,8 +38,8 @@ namespace DividedConsoleApp
             try
             {
                 // Get an instance of your ConsoleInputHelper to start the printing task
-                var consoleInputHelper = serviceProvider.GetRequiredService<IConsoleInputHelper>();
-                await consoleInputHelper.StartPrintingTaskAsync();
+                var consoleInputHelper = serviceProvider.GetRequiredService<IOperationService>();
+                await consoleInputHelper.StartTheElevatorSystemIOMonitoringProcessAsync();
                 await consoleInputHelper.StartElevatorThreads();
             }
             catch (Exception ex)

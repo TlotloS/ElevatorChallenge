@@ -1,6 +1,6 @@
 ﻿using ElevatorChallenge.Models;
 
-namespace ElevatorChallenge.Services
+namespace ElevatorChallenge.Services.Interfaces
 {
     public interface IElevator
     {

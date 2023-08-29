@@ -1,6 +1,5 @@
 ﻿using ElevatorChallenge.Enums;
 using ElevatorChallenge.Models;
-using System.Text;
 
 namespace ElevatorChallenge.Helpers
 {
@@ -20,7 +19,7 @@ namespace ElevatorChallenge.Helpers
             // Display the output matrix
             Console.SetCursorPosition(0, 10);
             Console.WriteLine("Output Section:");
-            PrintElevatorGraph(elevatorStatusList.ToList(),5);
+            PrintElevatorGraph(elevatorStatusList.ToList(), 5);
             PrintElevatorStatusMatrix(elevatorStatusList);
 
             Console.SetCursorPosition(0, 2);
@@ -48,7 +47,7 @@ namespace ElevatorChallenge.Helpers
                 Console.Write($"   " +
                     $"{ElevatorNamesHelper.GetElevatorName(elevatorStatus.ElevatorNumber)}" +
                     $"   |");
-           }
+            }
             Console.WriteLine();
         }
         private void PrintElevatorStatusMatrix(IEnumerable<ElevatorStatus> elevatorStatusList)

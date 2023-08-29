@@ -1,7 +1,6 @@
-﻿using ElevatorChallenge.Enums;
-using ElevatorChallenge.Models;
+﻿using ElevatorChallenge.Models;
 
-namespace ElevatorChallenge.Services
+namespace ElevatorChallenge.Services.Interfaces
 {
     public interface IElevatorMotion
     {

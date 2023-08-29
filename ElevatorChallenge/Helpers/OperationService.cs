@@ -1,15 +1,15 @@
 ﻿using ElevatorChallenge.Models;
-using ElevatorChallenge.Services;
+using ElevatorChallenge.Services.Interfaces;
 
 namespace ElevatorChallenge.Helpers
 {
-    public class ConsoleInputHelper : IConsoleInputHelper
+    public class OperationService : IOperationService
     {
         private readonly IControlCentreService _controlCentreService;
         private readonly IElevatorThreadManager _elevatorThreadManager;
         private readonly IConsoleOutputHelper _diplayHelper;
         private List<ElevatorStatus> _elevatorStatuses = new List<ElevatorStatus>();
-        public ConsoleInputHelper(IControlCentreService controlCentreService,
+        public OperationService(IControlCentreService controlCentreService,
             IElevatorThreadManager elevatorThreadManager,
             IConsoleOutputHelper displayHelper)
         {
@@ -17,16 +17,17 @@ namespace ElevatorChallenge.Helpers
             _elevatorThreadManager = elevatorThreadManager;
             _diplayHelper = displayHelper;
         }
+
+        ///<inheritdoc/>
         public async Task StartElevatorThreads()
         {
             var elevators = await _controlCentreService.GetElevators();
             _elevatorThreadManager.StartElevatorThreadsAsync(elevators);
         }
-        public async Task StartPrintingTaskAsync()
+
+        ///<inheritdoc/>
+        public async Task StartTheElevatorSystemIOMonitoringProcessAsync()
         {
-            Console.SetCursorPosition(0, 1); // Move cursor to a specific position1
-            Console.WriteLine("Input Section (originFloor; destinationFloor; passengers):");
-            Console.SetCursorPosition(0, 2);
             await Task.Run(async () =>
             {
                 await StartElevatorThreads();
@@ -44,13 +45,19 @@ namespace ElevatorChallenge.Helpers
                     if (Console.KeyAvailable)
                     {
                         string input = Console.ReadLine();
-                        await ConvertInputToAndSubmitRequestAsync(input);
+                        await ConvertConsoleInputToPaseengerRequestAndSubmitAsync(input);
                     }
                 }
             });
         }
 
-        private async Task ConvertInputToAndSubmitRequestAsync(string input)
+        /// <summary>
+        /// Takes in the user console input as string, parses it
+        /// and submits a pickup request to the elevator control center
+        /// </summary>
+        /// <param name="input">user console input</param>
+        /// <returns></returns>
+        private async Task ConvertConsoleInputToPaseengerRequestAndSubmitAsync(string input)
         {
             try
             {
@@ -77,15 +84,6 @@ namespace ElevatorChallenge.Helpers
                 _diplayHelper.LogErrorToConsole(ex.Message);
                 await Task.Delay(TimeSpan.FromSeconds(0.5));
             }
-        }
-        private async Task UpdateInputSection()
-        {
-            Console.SetCursorPosition(0, 1); // Move cursor to a specific position1
-            Console.WriteLine("Input Section (originFloor; destinationFloor; passengers):");
-            Console.SetCursorPosition(0, 2);
-            string input = Console.ReadLine();
-            // Process input or perform actions based on input
-            await ConvertInputToAndSubmitRequestAsync(input);
         }
     }
 }

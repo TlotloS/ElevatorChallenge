@@ -10,6 +10,6 @@
         /// The floor which the passenger(s) are going to
         /// </summary>
         public int DestinationFloorLevel { get; set; }
-        public int PassengerCount { get; set;}
+        public int PassengerCount { get; set; }
     }
 }

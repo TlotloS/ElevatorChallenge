@@ -1,8 +1,9 @@
 ﻿using ElevatorChallenge.Enums;
 using ElevatorChallenge.Helpers;
 using ElevatorChallenge.Models;
+using ElevatorChallenge.Services.Interfaces;
 
-namespace ElevatorChallenge.Services
+namespace ElevatorChallenge.Services.Implementations
 {
     public class Elevator : ElevatorMotion, IElevator
     {
@@ -135,7 +136,8 @@ namespace ElevatorChallenge.Services
             await Task.Delay(TimeSpan.FromSeconds(_elevatorConfiguration.DelayInSeconds.HandlingPassengers)); // Simulated delay
         }
 
-        private bool hasDropOffs(){
+        private bool hasDropOffs()
+        {
             var dropOffs = _passengersInTransit.Where(x => x.DestinationFloorLevel == CurrentStatus.CurrentFloor).ToList();
             return dropOffs.Any();
         }

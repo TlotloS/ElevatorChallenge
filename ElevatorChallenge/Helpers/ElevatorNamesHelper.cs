@@ -3,7 +3,11 @@
     public static class ElevatorNamesHelper
     {
         private static readonly char[] AlphabetArray = GenerateAlphabetArray();
-
+        /// <summary>
+        /// Static method to get the name of a elevator given the instance index
+        /// </summary>
+        /// <param name="number"></param>
+        /// <returns></returns>
         public static string GetElevatorName(int number)
         {
             if (number >= 0 && number < AlphabetArray.Length)

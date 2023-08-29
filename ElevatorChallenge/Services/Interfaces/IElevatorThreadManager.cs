@@ -1,4 +1,4 @@
-﻿namespace ElevatorChallenge.Services
+﻿namespace ElevatorChallenge.Services.Interfaces
 {
     public interface IElevatorThreadManager
     {

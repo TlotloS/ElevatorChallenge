@@ -1,8 +1,9 @@
 ﻿using ElevatorChallenge.Enums;
 using ElevatorChallenge.Models;
+using ElevatorChallenge.Services.Interfaces;
 using Microsoft.Extensions.Options;
 
-namespace ElevatorChallenge.Services
+namespace ElevatorChallenge.Services.Implementations
 {
     public class ControlCentreService : IControlCentreService
     {
@@ -68,12 +69,14 @@ namespace ElevatorChallenge.Services
             );
             IElevator closestElevator;
 
-            if (elevatorsTravellingTowardRequestLevel.Any()) {
-                closestElevator =  elevatorsTravellingTowardRequestLevel
+            if (elevatorsTravellingTowardRequestLevel.Any())
+            {
+                closestElevator = elevatorsTravellingTowardRequestLevel
                 // absolute delte will give us the distacne
                 .OrderBy((x) => Math.Abs(x.CurrentStatus.CurrentFloor - request.OriginFloorLevel))
                 .First();
-            }else
+            }
+            else
             {
                 closestElevator = _elevators
                                 .OrderBy((x) => Math.Abs(x.CurrentStatus.CurrentFloor - request.OriginFloorLevel)) // absolute value ensure the delta is alway positive

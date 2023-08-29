@@ -1,4 +1,4 @@
-﻿using ElevatorChallenge.Services;
+﻿using ElevatorChallenge.Services.Interfaces;
 
 public class ElevatorThreadManager : IElevatorThreadManager
 {
@@ -22,7 +22,7 @@ public class ElevatorThreadManager : IElevatorThreadManager
         {
             while (true)
             {
-                if(elevator.HasPendingRequests())
+                if (elevator.HasPendingRequests())
                 {
                     await elevator.MoveToNextLevelAsync();
                     await Task.Delay(TimeSpan.FromSeconds(2));
